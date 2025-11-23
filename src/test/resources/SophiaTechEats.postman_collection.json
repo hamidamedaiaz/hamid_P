@@ -1,0 +1,193 @@
+{
+  "info": {
+    "name": "SophiaTech Eats API",
+    "_postman_id": "12345678-abcd-ef00-1234-56789abcdef0",
+    "description": "Collection Postman pour tester SophiaTech Eats avec IDs dynamiques",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET Restaurants",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/restaurants",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["restaurants"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Stocke le premier restaurant et son premier plat",
+              "let jsonData = pm.response.json();",
+              "pm.environment.set(\"restaurantId\", jsonData[0].id);",
+              "if(jsonData[0].dishes.length > 0) {",
+              "    pm.environment.set(\"dishId\", jsonData[0].dishes[0].id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET Restaurant by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/restaurants/{{restaurantId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["restaurants", "{{restaurantId}}"]
+        }
+      }
+    },
+    {
+      "name": "POST New Restaurant",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test Restaurant\",\n  \"address\": \"123 rue du Campus Polytech\",\n  \"openingTime\": \"08:00:00\",\n  \"closingTime\": \"20:00:00\",\n  \"isOpen\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/restaurants",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["restaurants"]
+        }
+      }
+    },
+    {
+      "name": "PUT Update Restaurant",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Updated Restaurant\",\n  \"address\": \"Nouvelle adresse\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/restaurants/{{restaurantId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["restaurants", "{{restaurantId}}"]
+        }
+      }
+    },
+    {
+      "name": "GET Menu",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/restaurants/{{restaurantId}}/menu",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["restaurants", "{{restaurantId}}", "menu"]
+        }
+      }
+    },
+    {
+      "name": "POST New Dish",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Nouvelle Pizza\",\n  \"description\": \"Pizza test\",\n  \"price\": 10.5,\n  \"category\": \"MAIN_COURSE\",\n  \"available\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/restaurants/{{restaurantId}}/menu",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["restaurants", "{{restaurantId}}", "menu"]
+        }
+      }
+    },
+    {
+      "name": "PUT Update Dish",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Bowl Végétarien Updated\",\n  \"price\": 11.0\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/restaurants/{{restaurantId}}/menu/{{dishId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["restaurants", "{{restaurantId}}", "menu", "{{dishId}}"]
+        }
+      }
+    },
+    {
+      "name": "DELETE Dish",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/restaurants/{{restaurantId}}/menu/{{dishId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["restaurants", "{{restaurantId}}", "menu", "{{dishId}}"]
+        }
+      }
+    },
+    {
+      "name": "GET Filter Restaurants",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/restaurants/filter?isOpen=true",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["restaurants", "filter"],
+          "query": [
+            { "key": "isOpen", "value": "true" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "DELETE Restaurant",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/restaurants/{{restaurantId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["restaurants", "{{restaurantId}}"]
+        }
+      }
+    }
+  ]
+}
