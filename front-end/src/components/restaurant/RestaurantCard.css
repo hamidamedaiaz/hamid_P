@@ -1,0 +1,73 @@
+.restaurant-card {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    border: 1px solid #cce0ff;
+    border-radius: 10px;
+    background-color: #f0f8ff;
+    gap: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.restaurant-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-content {
+    all: unset;
+    display: block;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.card-content:hover {
+    background-color: #e0f0ff;
+}
+
+.restaurant-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1E3A8A;
+}
+
+.restaurant-address {
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.restaurant-status .open {
+    color: green;
+    font-weight: bold;
+}
+
+.restaurant-status .closed {
+    color: red;
+    font-weight: bold;
+}
+
+.manager-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.delete-restaurant-button {
+    padding: 6px 12px;
+    background-color: #ff0000;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.delete-restaurant-button:hover {
+    background-color: #ff7875;
+    transform: translateY(-1px);
+}

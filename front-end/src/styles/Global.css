@@ -1,0 +1,207 @@
+/* Reset et base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Couleurs principales */
+    --primary-color: #1E3A8A; /* Bleu foncé */
+    --secondary-color: #0033ff; /* Bleu clair */
+    --accent-color: #2563EB; /* Bleu vibrant */
+    --background-color: #F3F4F6; /* Gris clair */
+    --card-bg: #FFFFFF;
+    --text-color: #111827;
+    --text-light: #6B7280;
+    --border-radius: 8px;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --spacing: 16px;
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    /* Form & UI */
+    --input-border: #d1d5db;
+    --input-focus-shadow: rgba(59, 130, 246, 0.4);
+}
+
+/* Corps de page */
+body {
+    font-family: var(--font-family), sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+}
+
+/* Liens */
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--accent-color);
+}
+
+/* Boutons globaux */
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 10px 16px;
+    background-color: var(--primary-color);
+    color: #fff;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+}
+
+button:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-1px);
+}
+
+/* Inputs, selects, textarea */
+input, select, textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius);
+    outline: none;
+    font-family: var(--font-family), sans-serif;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 6px var(--input-focus-shadow);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-color);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+/* Header / Footer */
+header {
+    background-color: var(--primary-color);
+    color: #fff;
+    box-shadow: var(--shadow);
+    padding: var(--spacing);
+    margin-bottom: var(--spacing);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    top: 0;
+    grid-row: 1 / 1;
+}
+
+footer {
+    background-color: var(--secondary-color);
+    color: var(--text-light);
+    box-shadow: var(--shadow);
+    padding: var(--spacing);
+    margin-top: var(--spacing);
+    text-align: center;
+    font-size: 0.9rem;
+    width: 100%;
+    bottom: 0;
+    grid-row: 3 / 3;
+}
+
+/* Cards génériques */
+.card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: var(--spacing);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Formulaires */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: var(--card-bg);
+    padding: var(--spacing);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+/* Tables et listes */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* States */
+.open {
+    color: green;
+    font-weight: bold;
+}
+
+.closed {
+    color: red;
+    font-weight: bold;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mb-1 {
+    margin-bottom: 8px;
+}
+
+.mb-2 {
+    margin-bottom: 16px;
+}
+
+.mt-1 {
+    margin-top: 8px;
+}
+
+.mt-2 {
+    margin-top: 16px;
+}
+
+.p-1 {
+    padding: 8px;
+}
+
+.p-2 {
+    padding: 16px;
+}
+
+.rounded {
+    border-radius: var(--border-radius);
+}
+
+.shadow {
+    box-shadow: var(--shadow);
+}

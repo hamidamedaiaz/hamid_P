@@ -1,0 +1,99 @@
+.filter-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background-color: #ffffff;
+    padding: 20px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    gap: 20px;
+}
+
+.filter-bar:hover {
+    box-shadow: 0 6px 14px rgba(30, 58, 138, 0.12);
+    transform: translateY(-2px);
+}
+
+.filter-bar div {
+    display: grid;
+    gap: 8px;
+}
+
+.filter-bar p {
+    margin: 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #1e3a8a;
+    letter-spacing: 0.3px;
+}
+
+.filter-bar select {
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #1f2937;
+    font-size: 0.95rem;
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.filter-bar select:hover {
+    border-color: #3b82f6;
+}
+
+.filter-bar select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.filter-bar button {
+    padding: 12px 20px;
+    background-color: #1e3a8a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    transition: all 0.25s ease;
+    align-self: center;
+    box-shadow: 0 3px 8px rgba(30, 58, 138, 0.25);
+}
+
+.filter-bar button:hover {
+    background-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(59, 130, 246, 0.35);
+}
+
+.filter-bar button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(30, 58, 138, 0.2);
+}
+
+@media (max-width: 768px) {
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .filter-bar button {
+        width: 100%;
+        text-align: center;
+    }
+}

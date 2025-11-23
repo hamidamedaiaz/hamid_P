@@ -1,0 +1,148 @@
+.manage-restaurant {
+    padding: 40px 30px;
+    font-family: "Inter", "Segoe UI", sans-serif;
+    background: linear-gradient(to bottom right, #f8fbff, #eef4ff);
+    color: #1f2937;
+    min-height: 100vh;
+}
+
+.page-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 40px;
+    color: #1E3A8A;
+}
+
+.section {
+    background-color: #ffffff;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 10px rgba(30, 58, 138, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(30, 58, 138, 0.15);
+}
+
+.section-title {
+    color: #1E3A8A;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.divider {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, #1E3A8A, #3B82F6);
+    margin: 40px 0;
+    border-radius: 2px;
+}
+
+.menu-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: space-between;
+}
+
+.dishes-list,
+.add-dish {
+    flex: 1 1 45%;
+    min-width: 320px;
+}
+
+.dish-item {
+    background-color: #f9fbff;
+    border: 1px solid #dbe3f8;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 6px rgba(30, 58, 138, 0.05);
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.dish-item:hover {
+    background-color: #eef3ff;
+    transform: translateY(-2px);
+}
+
+.dish-info strong {
+    color: #1E3A8A;
+    font-size: 1.1rem;
+}
+
+.dish-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn.edit {
+    background-color: #2563EB;
+    color: white;
+}
+
+.btn.edit:hover {
+    background-color: #3B82F6;
+}
+
+.btn.delete {
+    background-color: #E11D48;
+    color: white;
+}
+
+.btn.delete:hover {
+    background-color: #F43F5E;
+}
+
+.btn.close {
+    background-color: #4B5563;
+    color: white;
+    margin-top: 10px;
+}
+
+.btn.close:hover {
+    background-color: #6B7280;
+}
+
+@media (max-width: 768px) {
+    .manage-restaurant {
+        padding: 20px;
+    }
+
+    .menu-layout {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .dishes-list,
+    .add-dish {
+        flex: 1 1 100%;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .section {
+        padding: 20px;
+    }
+}
