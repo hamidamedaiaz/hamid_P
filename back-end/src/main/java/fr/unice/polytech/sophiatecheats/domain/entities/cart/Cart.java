@@ -57,6 +57,12 @@ public class Cart implements Entity<UUID> {
     private UUID restaurantId;
 
     /**
+     * Identifiant du créneau de livraison sélectionné.
+     * Null si aucun créneau n'est sélectionné.
+     */
+    private UUID deliverySlotId;
+
+    /**
      * Crée un nouveau panier pour l'utilisateur spécifié.
      *
      * @param userId l'identifiant de l'utilisateur propriétaire
@@ -69,7 +75,8 @@ public class Cart implements Entity<UUID> {
         this.id = UUID.randomUUID();
         this.userId = userId;
         this.items = new ArrayList<>();
-        this.restaurantId = null; // Aucun restaurant au départ
+        this.restaurantId = null;
+        this.deliverySlotId = null;
         this.createdAt = LocalDateTime.now();
     }
 
@@ -192,6 +199,7 @@ public class Cart implements Entity<UUID> {
         validate();
         items.clear();
         restaurantId = null; // Réinitialiser le restaurant
+        deliverySlotId = null; // Réinitialiser le créneau
     }
 
     /**
@@ -231,6 +239,33 @@ public class Cart implements Entity<UUID> {
      */
     public boolean belongsToRestaurant(UUID restaurantId) {
         return this.restaurantId != null && this.restaurantId.equals(restaurantId);
+    }
+
+    /**
+     * Définit le créneau de livraison pour ce panier.
+     *
+     * @param slotId l'identifiant du créneau de livraison
+     */
+    public void setDeliverySlot(UUID slotId) {
+        this.deliverySlotId = slotId;
+    }
+
+    /**
+     * Retourne l'identifiant du créneau de livraison.
+     *
+     * @return l'identifiant du créneau ou null si aucun n'est sélectionné
+     */
+    public UUID getDeliverySlotId() {
+        return deliverySlotId;
+    }
+
+    /**
+     * Vérifie si un créneau de livraison a été sélectionné.
+     *
+     * @return true si un créneau est sélectionné, false sinon
+     */
+    public boolean hasDeliverySlot() {
+        return deliverySlotId != null;
     }
 
     @Override

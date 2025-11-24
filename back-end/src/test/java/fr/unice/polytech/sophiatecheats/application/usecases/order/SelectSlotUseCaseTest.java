@@ -4,8 +4,8 @@ import fr.unice.polytech.sophiatecheats.application.dto.order.request.SelectDeli
 import fr.unice.polytech.sophiatecheats.domain.entities.order.Order;
 import fr.unice.polytech.sophiatecheats.domain.enums.OrderStatus;
 import fr.unice.polytech.sophiatecheats.domain.exceptions.ValidationException;
-import fr.unice.polytech.sophiatecheats.domain.repositories.OrderRepository;
-import fr.unice.polytech.sophiatecheats.domain.repositories.RestaurantRepository;
+import fr.unice.polytech.sophiatecheats.domain.repositories.CartRepository;
+import fr.unice.polytech.sophiatecheats.domain.repositories.TimeSlotRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,32 +18,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@DisplayName("SelectDeliverySlotUseCase - Validation commande avant créneau")
+@DisplayName("SelectDeliverySlotUseCase - Validation panier avant créneau")
 class SelectSlotUseCaseTest {
-    private OrderRepository orderRepository;
-    private RestaurantRepository restaurantRepository;
+    private CartRepository cartRepository;
+    private TimeSlotRepository timeSlotRepository;
     private SelectDeliverySlotUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        orderRepository = mock(OrderRepository.class);
-        restaurantRepository = mock(RestaurantRepository.class);
-        useCase = new SelectDeliverySlotUseCase(orderRepository, restaurantRepository);
+        cartRepository = mock(CartRepository.class);
+        timeSlotRepository = mock(TimeSlotRepository.class);
+        useCase = new SelectDeliverySlotUseCase(cartRepository, timeSlotRepository);
     }
 
+    // TODO: Mettre à jour ce test car SelectDeliverySlotUseCase gère maintenant les CARTS, pas les ORDERS
+    // Dans le nouveau flux : Cart → Slot → Payment → Order
+    // Le slot est sélectionné AVANT la création de la commande, donc pas de validation Order ici
+
+    /*
     @Test
-    @DisplayName("Impossible de réserver un créneau pour une commande non validée")
-    void cannotReserveSlotForNonValidatedOrder() {
-        // Prépare une commande avec un statut non valide (ex: EXPIRED)
-        Order order = mock(Order.class);
-        when(order.getStatus()).thenReturn(OrderStatus.EXPIRED);
-        when(order.hasDeliverySlot()).thenReturn(false);
-        String orderId = UUID.randomUUID().toString();
-        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
-        SelectDeliverySlotRequest request = mock(SelectDeliverySlotRequest.class);
-        when(request.orderId()).thenReturn(orderId);
-        when(request.isValid()).thenReturn(true);
-        ValidationException ex = assertThrows(ValidationException.class, () -> useCase.execute(request));
-        assertTrue(ex.getMessage().contains("Impossible de réserver un créneau pour une commande non validée"));
+    @DisplayName("Impossible de réserver un créneau pour un panier vide")
+    void cannotReserveSlotForEmptyCart() {
+        // TODO: Implémenter ce test pour valider qu'on ne peut pas sélectionner un slot
+        // si le panier est vide
     }
+    */
 }

@@ -3,11 +3,16 @@ package fr.unice.polytech.sophiatecheats.interfaces.http.handlers;
 import com.sun.net.httpserver.HttpExchange;
 import fr.unice.polytech.sophiatecheats.application.dto.FindCartRequest;
 import fr.unice.polytech.sophiatecheats.application.dto.FindCartResponse;
+import fr.unice.polytech.sophiatecheats.application.dto.order.OrderDto;
 import fr.unice.polytech.sophiatecheats.application.dto.user.request.AddDishToCartRequest;
+import fr.unice.polytech.sophiatecheats.application.dto.user.request.PlaceOrderRequest;
 import fr.unice.polytech.sophiatecheats.application.dto.user.request.RemoveFromCartRequest;
 import fr.unice.polytech.sophiatecheats.application.dto.user.request.UpdateCartItemRequest;
 import fr.unice.polytech.sophiatecheats.application.dto.user.response.AddDishToCartResponse;
+import fr.unice.polytech.sophiatecheats.application.dto.user.response.PlaceOrderResponse;
 import fr.unice.polytech.sophiatecheats.application.facade.SophiaTechEatsFacade;
+import fr.unice.polytech.sophiatecheats.domain.exceptions.EntityNotFoundException;
+import fr.unice.polytech.sophiatecheats.domain.exceptions.ValidationException;
 import fr.unice.polytech.sophiatecheats.interfaces.http.utils.HttpUtils;
 import fr.unice.polytech.sophiatecheats.interfaces.http.utils.JaxsonUtils;
 import fr.unice.polytech.sophiatecheats.interfaces.http.utils.ResponseSender;
@@ -34,7 +39,13 @@ public class CartHandler implements RouteHandler {
             switch (method) {
 
                 case "POST":
-                    if (path.contains("/items")) {
+                    if (path.contains("/payment")) {
+                        // PAIEMENT → Transformation du panier en commande
+                        processPayment(exchange, pathParams.get("userId"), sender);
+                    } else if (path.contains("/delivery-slot")) {
+                        // SÉLECTION DU CRÉNEAU → Ajouter au panier
+                        selectDeliverySlotForCart(exchange, pathParams.get("userId"), sender);
+                    } else if (path.contains("/items")) {
                         addItemToCart(exchange, sender);
                     }
                     break;
@@ -122,5 +133,96 @@ public class CartHandler implements RouteHandler {
         facade.updateCartItem(request);
 
         sender.send(HttpUtils.OK, "Article du panier mis à jour", null);
+    }
+
+
+    private void processPayment(HttpExchange exchange, String userId, ResponseSender sender) throws IOException {
+        try {
+
+            String json = new String(exchange.getRequestBody().readAllBytes());
+            PlaceOrderRequest placeOrderRequest = JaxsonUtils.fromJson(json, PlaceOrderRequest.class);
+
+
+            PlaceOrderResponse orderResponse = facade.placeOrder(placeOrderRequest);
+
+
+            OrderDto order = facade.getOrder(orderResponse.orderId());
+
+            sender.send(
+                HttpUtils.CREATED,
+                JaxsonUtils.toJson(order),
+                Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON)
+            );
+
+        } catch (ValidationException e) {
+            sendPaymentError(sender, e.getMessage(), HttpUtils.BAD_REQUEST);
+
+        } catch (EntityNotFoundException e) {
+            sendPaymentError(sender, e.getMessage(), HttpUtils.RESOURCE_NOT_FOUND);
+
+        } catch (Exception e) {
+            sendPaymentError(sender, "Erreur lors du traitement du paiement: " + e.getMessage(), HttpUtils.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Envoie une réponse d'erreur de paiement au client
+     */
+    private void sendPaymentError(ResponseSender sender, String errorMessage, int statusCode) throws IOException {
+        String errorResponse = String.format(
+            "{\"error\":\"Échec du paiement\",\"message\":\"%s\",\"status\":\"FAILED\"}",
+            errorMessage.replace("\"", "\\\"")  // Échapper les guillemets
+        );
+
+        sender.send(
+            statusCode,
+            errorResponse,
+            Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON)
+        );
+    }
+
+    /**
+     * POST /api/cart/{userId}/delivery-slot
+     * Sélectionne un créneau de livraison et l'ajoute au panier.
+     * Le créneau sera utilisé lors du paiement (PlaceOrderUseCase).
+     *
+     * Body attendu :
+     * {
+     *   "deliverySlotId": "slot-uuid"
+     * }
+     */
+    private void selectDeliverySlotForCart(HttpExchange exchange, String userId, ResponseSender sender) throws IOException {
+        try {
+            // Lire le body
+            String json = new String(exchange.getRequestBody().readAllBytes());
+            var request = JaxsonUtils.fromJson(json, java.util.Map.class);
+            String deliverySlotId = (String) request.get("deliverySlotId");
+
+            if (deliverySlotId == null) {
+                sendPaymentError(sender, "deliverySlotId est requis", HttpUtils.BAD_REQUEST);
+                return;
+            }
+
+            // Déléguer à la facade (comme dans processPayment)
+            facade.setDeliverySlotToCart(UUID.fromString(userId), UUID.fromString(deliverySlotId));
+
+            // Succès
+            sender.send(
+                HttpUtils.OK,
+                JaxsonUtils.toJson(java.util.Map.of(
+                    "success", true,
+                    "message", "Créneau de livraison sélectionné",
+                    "deliverySlotId", deliverySlotId
+                )),
+                java.util.Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON)
+            );
+
+        } catch (EntityNotFoundException e) {
+            sendPaymentError(sender, e.getMessage(), HttpUtils.RESOURCE_NOT_FOUND);
+        } catch (ValidationException e) {
+            sendPaymentError(sender, e.getMessage(), HttpUtils.BAD_REQUEST);
+        } catch (Exception e) {
+            sendPaymentError(sender, "Erreur lors de la sélection du créneau: " + e.getMessage(), HttpUtils.INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -7,14 +7,16 @@ import java.util.UUID;
 /**
  * Request DTO for placing an order from the user's active cart.
  *
- * @param userId        l'identifiant de l'utilisateur qui passe commande
- * @param restaurantId  l'identifiant du restaurant (pour validation)
- * @param paymentMethod le moyen de paiement choisi (STUDENT_CREDIT ou EXTERNAL_CARD)
+ * @param userId         l'identifiant de l'utilisateur qui passe commande
+ * @param restaurantId   l'identifiant du restaurant (pour validation)
+ * @param paymentMethod  le moyen de paiement choisi (STUDENT_CREDIT ou EXTERNAL_CARD)
+ * @param deliverySlotId l'identifiant du créneau de livraison choisi (OBLIGATOIRE)
  */
 public record PlaceOrderRequest(
         UUID userId,
         UUID restaurantId,
-        PaymentMethod paymentMethod
+        PaymentMethod paymentMethod,
+        UUID deliverySlotId
 ) {
     /**
      * Valide que tous les champs obligatoires sont présents.
@@ -24,6 +26,7 @@ public record PlaceOrderRequest(
     public boolean isValid() {
         return userId != null &&
                 restaurantId != null &&
-                paymentMethod != null;
+                paymentMethod != null &&
+                deliverySlotId != null;
     }
 }

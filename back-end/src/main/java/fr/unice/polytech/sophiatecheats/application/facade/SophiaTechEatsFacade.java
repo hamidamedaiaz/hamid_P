@@ -30,6 +30,7 @@ import fr.unice.polytech.sophiatecheats.application.usecases.user.order.PlaceOrd
 import fr.unice.polytech.sophiatecheats.infrastructure.config.ApplicationConfig;
 
 import java.util.List;
+import java.util.UUID;
 
 public class SophiaTechEatsFacade {
 
@@ -153,5 +154,15 @@ public class SophiaTechEatsFacade {
         restaurantService.releaseDeliverySlot(restaurantId, slotId);
     }
 
+    /**
+     * Ajoute un créneau de livraison au panier.
+     * Le créneau sera utilisé lors de la transformation du panier en commande (PlaceOrderUseCase).
+     *
+     * Note: Utilise selectDeliverySlotUseCase qui gère maintenant les Carts (pas les Orders)
+     */
+    public void setDeliverySlotToCart(UUID userId, UUID deliverySlotId) {
+        selectDeliverySlotUseCase.execute(
+            new SelectDeliverySlotRequest(userId.toString(), deliverySlotId)
+        );
+    }
 }
-

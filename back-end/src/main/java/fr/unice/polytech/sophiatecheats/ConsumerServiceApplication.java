@@ -95,7 +95,6 @@ public class ConsumerServiceApplication {
         ApiRegistry registry = new ApiRegistry();
 
         // Routes pour le panier
-
         registry.registerRoute(POST, "/api/cart/items", cartHandler);
         registry.registerRoute(GET, "/api/cart/{userId}", cartHandler);
         registry.registerRoute(PUT, "/api/cart/{userId}/items", cartHandler);
@@ -103,12 +102,16 @@ public class ConsumerServiceApplication {
         registry.registerRoute(DELETE, "/api/cart/{userId}/cancel", cartHandler);
         registry.registerRoute(DELETE, "/api/cart/{userId}/items/{dishId}", cartHandler);
 
-        // Routes pour les commandes
-        registry.registerRoute(POST, "/api/orders", orderHandler);
+        // Sélectionner un créneau de livraison (ajouté au panier)
+        registry.registerRoute(POST, "/api/cart/{userId}/delivery-slot", cartHandler);
+
+        // Payer le panier (transforme en commande)
+        registry.registerRoute(POST, "/api/cart/{userId}/payment", cartHandler);
+
         registry.registerRoute(GET, "/api/orders/{id}", orderHandler);
         registry.registerRoute(GET, "/api/orders/user/{userId}", orderHandler);
+
         registry.registerRoute(POST, "/api/orders/{id}/delivery-slot", orderHandler);
-        registry.registerRoute(POST, "/api/orders/{id}/payment", orderHandler);
         registry.registerRoute(POST, "/api/orders/{id}/confirm", orderHandler);
 
         return registry;

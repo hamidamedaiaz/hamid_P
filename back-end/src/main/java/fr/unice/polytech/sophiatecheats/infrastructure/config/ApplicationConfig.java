@@ -9,17 +9,21 @@ import fr.unice.polytech.sophiatecheats.application.usecases.restaurant.AddDishT
 import fr.unice.polytech.sophiatecheats.application.usecases.restaurant.RemoveDishFromRestaurantUseCase;
 import fr.unice.polytech.sophiatecheats.application.usecases.restaurant.UpdateDishUseCase;
 import fr.unice.polytech.sophiatecheats.application.usecases.user.BrowseRestaurantsUseCase;
+import fr.unice.polytech.sophiatecheats.application.usecases.user.delivery.ValidateDeliverySlotUseCase;
 import fr.unice.polytech.sophiatecheats.application.usecases.user.order.PlaceOrderUseCase;
 import fr.unice.polytech.sophiatecheats.domain.repositories.CartRepository;
 import fr.unice.polytech.sophiatecheats.domain.repositories.OrderRepository;
 import fr.unice.polytech.sophiatecheats.domain.repositories.RestaurantRepository;
+import fr.unice.polytech.sophiatecheats.domain.repositories.TimeSlotRepository;
 import fr.unice.polytech.sophiatecheats.domain.repositories.UserRepository;
+import fr.unice.polytech.sophiatecheats.domain.services.DeliveryService;
 import fr.unice.polytech.sophiatecheats.domain.services.RestaurantService;
 import fr.unice.polytech.sophiatecheats.domain.services.photoai.PhotoAnalysisService;
 import fr.unice.polytech.sophiatecheats.infrastructure.external.MockAIPhotoAnalysisService;
 import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryCartRepository;
 import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryOrderRepository;
 import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryRestaurantRepository;
+import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryTimeSlotRepository;
 import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryUserRepository;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
@@ -63,15 +67,20 @@ public class ApplicationConfig {
         container.addComponent(RestaurantRepository.class, InMemoryRestaurantRepository.class);
         container.addComponent(OrderRepository.class, InMemoryOrderRepository.class);
         container.addComponent(CartRepository.class, InMemoryCartRepository.class);
+        container.addComponent(TimeSlotRepository.class, InMemoryTimeSlotRepository.class);
 
         // Services
         container.addComponent(PhotoAnalysisService.class, MockAIPhotoAnalysisService.class);
         container.addComponent(RestaurantService.class);
+        container.addComponent(DeliveryService.class);
 
         // Use Cases
         container.addComponent(BrowseRestaurantsUseCase.class);
         container.addComponent(PlaceOrderUseCase.class);
 
+        // Delivery Slot Use Cases
+        container.addComponent(ValidateDeliverySlotUseCase.class);
+        
         // Order Flow Use Cases - Complete order→slot→payment sequence
         container.addComponent(SelectDeliverySlotUseCase.class);
         container.addComponent(ConfirmOrderUseCase.class);
