@@ -111,7 +111,6 @@ public class ConsumerServiceApplication {
         registry.registerRoute(GET, "/api/orders/{id}", orderHandler);
         registry.registerRoute(GET, "/api/orders/user/{userId}", orderHandler);
 
-        registry.registerRoute(POST, "/api/orders/{id}/delivery-slot", orderHandler);
         registry.registerRoute(POST, "/api/orders/{id}/confirm", orderHandler);
 
         return registry;

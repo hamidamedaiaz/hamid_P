@@ -3,7 +3,10 @@ package fr.unice.polytech.sophiatecheats.application.usecases.cart;
 import fr.unice.polytech.sophiatecheats.application.dto.FindCartRequest;
 import fr.unice.polytech.sophiatecheats.application.dto.FindCartResponse;
 import fr.unice.polytech.sophiatecheats.application.usecases.UseCase;
+import fr.unice.polytech.sophiatecheats.domain.entities.cart.Cart;
 import fr.unice.polytech.sophiatecheats.domain.repositories.CartRepository;
+
+import java.util.Optional;
 
 
 public class FindActiveCartUseCase implements UseCase<FindCartRequest, FindCartResponse> {
@@ -16,15 +19,22 @@ public class FindActiveCartUseCase implements UseCase<FindCartRequest, FindCartR
 
     @Override
     public FindCartResponse execute(FindCartRequest findCartRequest) {
-        if (cartRepository.hasActiveCart(findCartRequest.userId())) {
-            return cartRepository.findActiveCartByUserId(findCartRequest.userId()).map(
-                    cart -> new FindCartResponse(
-                            cart.getId().toString(),
-                            cart.getUserId().toString()
-                    )
-            ).orElseGet(() -> createNotFoundResponse(findCartRequest.userId().toString()));
+        // Chercher le panier actif
+        Optional<Cart> cartOpt = cartRepository.findActiveCartByUserId(findCartRequest.userId());
+
+        if (cartOpt.isPresent()) {
+            Cart cart = cartOpt.get();
+            return new FindCartResponse(
+                    cart.getId().toString(),
+                    cart.getUserId().toString()
+            );
         }
-        return null;
+
+        // Si pas de panier, retourner une réponse "pas de panier"
+        return new FindCartResponse(
+                null,
+                findCartRequest.userId().toString()
+        );
     }
 
     private FindCartResponse createNotFoundResponse(String string) {

@@ -15,22 +15,15 @@ import fr.unice.polytech.sophiatecheats.domain.entities.cart.Cart;
 import java.util.UUID;
 
 /**
- * Use case pour sélectionner un créneau de livraison pour le PANIER (avant paiement).
- *
- * FLUX : Cart → Slot → Payment → Order
- *
- * Ce use case permet à l'utilisateur de sélectionner un créneau de livraison
- * AVANT de payer. Le créneau est stocké dans le panier et sera utilisé lors
- * de la transformation du panier en commande (PlaceOrderUseCase).
- *
- * Étapes :
- * 1. Vérifie que le panier existe et n'est pas vide
- * 2. Valide que le créneau existe et appartient au restaurant du panier
- * 3. Valide la disponibilité et capacité du créneau
- * 4. Ajoute le créneau au panier (SANS le réserver)
- * 5. Sauvegarde le panier
- *
- * Note : Le créneau sera réservé lors du paiement (PlaceOrderUseCase), pas ici.
+ * Use case pour sélectionner et réserver un créneau de livraison pour une commande.
+ * <p>
+ * Ce use case implémente la deuxième étape du flux: Order → Slot → Payment
+ * Flux:
+ * 1. Vérifie que la commande existe et n'a pas déjà de créneau
+ * 2. Trouve le créneau demandé dans le restaurant
+ * 3. Réserve le créneau
+ * 4. Associe le créneau à la commande
+ * 5. Sauvegarde la commande mise à jour
  */
 public class SelectDeliverySlotUseCase implements UseCase<SelectDeliverySlotRequest, SelectDeliverySlotResponse> {
 

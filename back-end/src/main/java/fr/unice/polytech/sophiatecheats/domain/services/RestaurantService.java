@@ -9,6 +9,7 @@ import fr.unice.polytech.sophiatecheats.domain.exceptions.DuplicateRestaurantExc
 import fr.unice.polytech.sophiatecheats.domain.exceptions.RestaurantNotFoundException;
 import fr.unice.polytech.sophiatecheats.domain.exceptions.RestaurantValidationException;
 import fr.unice.polytech.sophiatecheats.domain.repositories.RestaurantRepository;
+import fr.unice.polytech.sophiatecheats.domain.repositories.TimeSlotRepository;
 import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryRestaurantRepository;
 
 import java.math.BigDecimal;
@@ -29,9 +30,11 @@ import java.util.UUID;
  */
 public class RestaurantService {
     private final RestaurantRepository repository;
+    private final TimeSlotRepository timeSlotRepository;
 
-    public RestaurantService(RestaurantRepository repository) {
+    public RestaurantService(RestaurantRepository repository, TimeSlotRepository timeSlotRepository) {
         this.repository = repository;
+        this.timeSlotRepository = timeSlotRepository;
     }
 
     // GESTION DES RESTAURANTS - CRUD
@@ -180,6 +183,13 @@ public class RestaurantService {
     public void generateDeliverySlots(UUID restaurantId, LocalDate date, LocalTime start, LocalTime end, int maxCapacityPerSlot) {
         Restaurant r = getRestaurantById(restaurantId);
         r.getDeliverySchedule().generateDailySlots(date, start, end, maxCapacityPerSlot);
+
+        // Sauvegarder les créneaux dans TimeSlotRepository pour qu'ils soient accessibles par SelectDeliverySlotUseCase
+        List<TimeSlot> generatedSlots = r.getDeliverySchedule().getSlotsForDate(date);
+        for (TimeSlot slot : generatedSlots) {
+            timeSlotRepository.save(slot);
+        }
+
         repository.save(r);
     }
 

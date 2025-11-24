@@ -108,9 +108,6 @@ public class PlaceOrderUseCase implements UseCase<PlaceOrderRequest, PlaceOrderR
         Restaurant restaurant = restaurantRepository.findById(request.restaurantId())
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant not found: " + request.restaurantId()));
 
-        // ═══════════════════════════════════════════════════════════════════
-        // RÉCUPÉRER LE CRÉNEAU DE LIVRAISON DEPUIS LE PANIER
-        // ═══════════════════════════════════════════════════════════════════
         if (!cart.hasDeliverySlot()) {
             throw new ValidationException(
                 "Vous devez sélectionner un créneau de livraison avant de payer.");
@@ -127,11 +124,7 @@ public class PlaceOrderUseCase implements UseCase<PlaceOrderRequest, PlaceOrderR
                 "Le créneau de livraison ne correspond pas au restaurant sélectionné.");
         }
 
-        // ═══════════════════════════════════════════════════════════════════
-        // VÉRIFIER LA DISPONIBILITÉ DU SLOT (sans le réserver encore)
-        // ═══════════════════════════════════════════════════════════════════
-        // On vérifie juste que le slot est disponible, mais on ne le réserve PAS
-        // La réservation se fera APRÈS le paiement réussi
+
         if (!deliverySlot.isAvailable()) {
             throw new ValidationException(
                 "Le créneau de livraison sélectionné n'est plus disponible. Veuillez en choisir un autre.");
@@ -149,29 +142,20 @@ public class PlaceOrderUseCase implements UseCase<PlaceOrderRequest, PlaceOrderR
         // Utiliser PaymentStrategyFactory pour obtenir la stratégie de paiement appropriée
         PaymentStrategy paymentStrategy = PaymentStrategyFactory.createStrategy(request.paymentMethod());
 
-        // ═══════════════════════════════════════════════════════════════════
-        // TRAITER LE PAIEMENT EN PREMIER (avant de réserver le slot)
-        // ═══════════════════════════════════════════════════════════════════
-        // Si le paiement échoue ici, le slot reste disponible pour les autres
+
         validateAndProcessPayment(paymentStrategy, user, totalAmount, request.paymentMethod());
 
-        // ═══════════════════════════════════════════════════════════════════
-        // PAIEMENT RÉUSSI → MAINTENANT on peut réserver le slot
-        // ═══════════════════════════════════════════════════════════════════
+
         LocalDate slotDate = deliverySlot.getStartTime().toLocalDate();
         var validateSlotInput = new ValidateDeliverySlotUseCase.Input(
             deliverySlotId,  // Utiliser la variable deliverySlotId du panier
             slotDate
         );
 
-        // Réserver le créneau de façon définitive (lance exception si devenu indisponible)
-        // Note: Il y a un risque de race condition ici si 2 utilisateurs paient en même temps
-        // pour le même slot, mais ValidateDeliverySlotUseCase gère cette situation
+
         try {
             validateDeliverySlotUseCase.execute(validateSlotInput);
         } catch (Exception e) {
-            // Si la réservation échoue (slot pris entre temps), on doit annuler le paiement
-            // Pour STUDENT_CREDIT, on peut rembourser
             if (request.paymentMethod() == PaymentMethod.STUDENT_CREDIT) {
                 user.addCredit(totalAmount); // Rembourser
                 userRepository.save(user);
@@ -181,8 +165,7 @@ public class PlaceOrderUseCase implements UseCase<PlaceOrderRequest, PlaceOrderR
                 "Votre paiement a été annulé. Veuillez sélectionner un autre créneau et réessayer.");
         }
 
-        // Note: L'utilisateur est déjà sauvegardé si nécessaire (crédit étudiant)
-        // dans le bloc de gestion de la réservation du slot ci-dessus
+
 
         // Créer la commande à partir du panier
         Order order = new Order(
@@ -202,8 +185,6 @@ public class PlaceOrderUseCase implements UseCase<PlaceOrderRequest, PlaceOrderR
         // Sauvegarder la commande
         Order savedOrder = orderRepository.save(order);
 
-        // Note: Le créneau a déjà été réservé par ValidateDeliverySlotUseCase
-        // Pas besoin de le faire manuellement ici
 
         // Vider le panier apres transformation en commande
         cartRepository.delete(cart);

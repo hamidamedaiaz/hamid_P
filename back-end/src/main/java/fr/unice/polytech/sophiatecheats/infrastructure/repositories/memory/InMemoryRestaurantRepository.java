@@ -70,11 +70,125 @@ public class InMemoryRestaurantRepository extends InMemoryRepository<Restaurant,
                 .anyMatch(dish -> dish.getCategory() == category);
     }
 
+//    private void initializeWithSampleData() {
+//        Restaurant cafeteria = new Restaurant("La Cafétéria", "Campus Sophia Antipolis - Bâtiment A");
+//        cafeteria.setSchedule(LocalTime.of(8, 0), LocalTime.of(18, 0));
+//
+//        cafeteria.addDish(Dish.builder()
+//                .name("Salade César")
+//                .description("Salade fraîche avec croûtons et parmesan")
+//                .price(new BigDecimal("8.50"))
+//                .category(DishCategory.MAIN_COURSE)
+//                .addDietType(DietType.VEGETARIAN)
+//                .available(true)
+//                .build());
+//        cafeteria.addDish(Dish.builder()
+//                .name("Sandwich Jambon")
+//                .description("Pain de mie, jambon, beurre, salade")
+//                .price(new BigDecimal("4.20"))
+//                .category(DishCategory.MAIN_COURSE)
+//                .addDietType(DietType.NONE)
+//                .available(true)
+//                .build());
+//        cafeteria.addDish(Dish.builder()
+//                .name("Café")
+//                .description("Café expresso")
+//                .price(new BigDecimal("1.50"))
+//                .category(DishCategory.BEVERAGE)
+//                .addDietType(DietType.VEGAN)
+//                .available(true)
+//                .build());
+//        cafeteria.addDish(Dish.builder()
+//                .name("Tarte aux pommes")
+//                .description("Tarte maison aux pommes")
+//                .price(new BigDecimal("3.80"))
+//                .category(DishCategory.DESSERT)
+//                .addDietType(DietType.VEGETARIAN)
+//                .available(true)
+//                .build());
+//
+//        Restaurant foodTruck = new Restaurant("Food Truck Bio", "Parking Sud Campus");
+//        foodTruck.setSchedule(LocalTime.of(11, 30), LocalTime.of(14, 30));
+//
+//        foodTruck.addDish(Dish.builder()
+//                .name("Bowl Végétarien")
+//                .description("Quinoa, légumes grillés, avocat")
+//                .addDietType(DietType.VEGETARIAN)
+//                .price(new BigDecimal("9.90"))
+//                .category(DishCategory.VEGETARIAN)
+//                .available(true)
+//                .build());
+//        foodTruck.addDish(Dish.builder()
+//                .name("Burger Bio")
+//                .description("Steak de bœuf bio, fromage, légumes")
+//                .price(new BigDecimal("12.50"))
+//                .category(DishCategory.MAIN_COURSE)
+//                .addDietType(DietType.NONE)
+//                .available(true)
+//                .build());
+//        foodTruck.addDish(Dish.builder()
+//                .name("Jus de fruits frais")
+//                .description("Orange, pomme ou carotte")
+//                .price(new BigDecimal("3.00"))
+//                .category(DishCategory.BEVERAGE)
+//                .addDietType(DietType.VEGAN)
+//                .available(true)
+//                .build());
+//        foodTruck.addDish(Dish.builder()
+//                .name("Brownie Vegan")
+//                .description("Brownie sans produits animaux")
+//                .addDietType(DietType.VEGAN)
+//                .price(new BigDecimal("4.50"))
+//                .category(DishCategory.DESSERT)
+//                .available(true)
+//                .build());
+//
+//        Restaurant pizzeria = new Restaurant("Pizzeria du Campus", "Bâtiment C - Rez-de-chaussée");
+//        pizzeria.setSchedule(LocalTime.of(12, 0), LocalTime.of(22, 0));
+//        pizzeria.close();
+//
+//        pizzeria.addDish(Dish.builder()
+//                .name("Pizza Margherita")
+//                .description("Tomate, mozzarella, basilic")
+//                .price(new BigDecimal("11.00"))
+//                .category(DishCategory.MAIN_COURSE)
+//                .addDietType(DietType.VEGETARIAN)
+//                .available(true)
+//                .build());
+//        pizzeria.addDish(Dish.builder()
+//                .name("Tiramisu")
+//                .description("Dessert italien traditionnel")
+//                .price(new BigDecimal("5.50"))
+//                .category(DishCategory.DESSERT)
+//                .addDietType(DietType.VEGETARIAN)
+//                .available(true)
+//                .build());
+//        pizzeria.addDish(Dish.builder()
+//                .name("Coca-Cola")
+//                .description("Boisson gazeuse")
+//                .price(new BigDecimal("2.50"))
+//                .category(DishCategory.BEVERAGE)
+//                .addDietType(DietType.VEGAN)
+//                .available(true)
+//                .build());
+//
+//        save(cafeteria);
+//        save(foodTruck);
+//        save(pizzeria);
+//    }
+
     private void initializeWithSampleData() {
-        Restaurant cafeteria = new Restaurant("La Cafétéria", "Campus Sophia Antipolis - Bâtiment A");
+        // ========== LA CAFÉTÉRIA ==========
+        Restaurant cafeteria = Restaurant.builder()
+                .id(UUID.fromString("750e8400-e29b-41d4-a716-446655440001"))
+                .name("La Cafétéria")
+                .address("Campus Sophia Antipolis - Bâtiment A")
+                .build();
+
         cafeteria.setSchedule(LocalTime.of(8, 0), LocalTime.of(18, 0));
 
         cafeteria.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440001"))
                 .name("Salade César")
                 .description("Salade fraîche avec croûtons et parmesan")
                 .price(new BigDecimal("8.50"))
@@ -82,7 +196,9 @@ public class InMemoryRestaurantRepository extends InMemoryRepository<Restaurant,
                 .addDietType(DietType.VEGETARIAN)
                 .available(true)
                 .build());
+
         cafeteria.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440002"))
                 .name("Sandwich Jambon")
                 .description("Pain de mie, jambon, beurre, salade")
                 .price(new BigDecimal("4.20"))
@@ -90,7 +206,9 @@ public class InMemoryRestaurantRepository extends InMemoryRepository<Restaurant,
                 .addDietType(DietType.NONE)
                 .available(true)
                 .build());
+
         cafeteria.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440003"))
                 .name("Café")
                 .description("Café expresso")
                 .price(new BigDecimal("1.50"))
@@ -98,7 +216,9 @@ public class InMemoryRestaurantRepository extends InMemoryRepository<Restaurant,
                 .addDietType(DietType.VEGAN)
                 .available(true)
                 .build());
+
         cafeteria.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440004"))
                 .name("Tarte aux pommes")
                 .description("Tarte maison aux pommes")
                 .price(new BigDecimal("3.80"))
@@ -107,10 +227,17 @@ public class InMemoryRestaurantRepository extends InMemoryRepository<Restaurant,
                 .available(true)
                 .build());
 
-        Restaurant foodTruck = new Restaurant("Food Truck Bio", "Parking Sud Campus");
+        // ========== FOOD TRUCK BIO ==========
+        Restaurant foodTruck = Restaurant.builder()
+                .id(UUID.fromString("750e8400-e29b-41d4-a716-446655440002"))
+                .name("Food Truck Bio")
+                .address("Parking Sud Campus")
+                .build();
+
         foodTruck.setSchedule(LocalTime.of(11, 30), LocalTime.of(14, 30));
 
         foodTruck.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440005"))
                 .name("Bowl Végétarien")
                 .description("Quinoa, légumes grillés, avocat")
                 .addDietType(DietType.VEGETARIAN)
@@ -118,7 +245,9 @@ public class InMemoryRestaurantRepository extends InMemoryRepository<Restaurant,
                 .category(DishCategory.VEGETARIAN)
                 .available(true)
                 .build());
+
         foodTruck.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440006"))
                 .name("Burger Bio")
                 .description("Steak de bœuf bio, fromage, légumes")
                 .price(new BigDecimal("12.50"))
@@ -126,7 +255,9 @@ public class InMemoryRestaurantRepository extends InMemoryRepository<Restaurant,
                 .addDietType(DietType.NONE)
                 .available(true)
                 .build());
+
         foodTruck.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440007"))
                 .name("Jus de fruits frais")
                 .description("Orange, pomme ou carotte")
                 .price(new BigDecimal("3.00"))
@@ -134,7 +265,9 @@ public class InMemoryRestaurantRepository extends InMemoryRepository<Restaurant,
                 .addDietType(DietType.VEGAN)
                 .available(true)
                 .build());
+
         foodTruck.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440008"))
                 .name("Brownie Vegan")
                 .description("Brownie sans produits animaux")
                 .addDietType(DietType.VEGAN)
@@ -143,11 +276,18 @@ public class InMemoryRestaurantRepository extends InMemoryRepository<Restaurant,
                 .available(true)
                 .build());
 
-        Restaurant pizzeria = new Restaurant("Pizzeria du Campus", "Bâtiment C - Rez-de-chaussée");
+        // ========== PIZZERIA DU CAMPUS ==========
+        Restaurant pizzeria = Restaurant.builder()
+                .id(UUID.fromString("750e8400-e29b-41d4-a716-446655440003"))
+                .name("Pizzeria du Campus")
+                .address("Bâtiment C - Rez-de-chaussée")
+                .build();
+
         pizzeria.setSchedule(LocalTime.of(12, 0), LocalTime.of(22, 0));
-        pizzeria.close();
+        pizzeria.close(); // Fermée par défaut
 
         pizzeria.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440009"))
                 .name("Pizza Margherita")
                 .description("Tomate, mozzarella, basilic")
                 .price(new BigDecimal("11.00"))
@@ -155,7 +295,9 @@ public class InMemoryRestaurantRepository extends InMemoryRepository<Restaurant,
                 .addDietType(DietType.VEGETARIAN)
                 .available(true)
                 .build());
+
         pizzeria.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440010"))
                 .name("Tiramisu")
                 .description("Dessert italien traditionnel")
                 .price(new BigDecimal("5.50"))
@@ -163,7 +305,9 @@ public class InMemoryRestaurantRepository extends InMemoryRepository<Restaurant,
                 .addDietType(DietType.VEGETARIAN)
                 .available(true)
                 .build());
+
         pizzeria.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440011"))
                 .name("Coca-Cola")
                 .description("Boisson gazeuse")
                 .price(new BigDecimal("2.50"))
@@ -172,11 +316,11 @@ public class InMemoryRestaurantRepository extends InMemoryRepository<Restaurant,
                 .available(true)
                 .build());
 
+        // Sauvegarder les restaurants
         save(cafeteria);
         save(foodTruck);
         save(pizzeria);
     }
-
     @Override
     public Restaurant save(Restaurant restaurant) {
         isDuplicate(restaurant);

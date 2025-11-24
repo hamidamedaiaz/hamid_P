@@ -33,6 +33,8 @@ public class AddDishToCartUseCase implements UseCase<AddDishToCartRequest, AddDi
     @Override
     public AddDishToCartResponse execute(AddDishToCartRequest request) {
         try {
+
+
             // Valider que l'utilisateur existe
             validateAndGetUser(request.userId());
 
@@ -43,8 +45,6 @@ public class AddDishToCartUseCase implements UseCase<AddDishToCartRequest, AddDi
 
             Cart cart = getOrCreateActiveCart(request.userId());
 
-            // Ajouter le plat avec l'ID du restaurant
-            cart.addDish(dish, request.quantity(), restaurant.getId());
 
             cartRepository.save(cart);
 
@@ -56,7 +56,9 @@ public class AddDishToCartUseCase implements UseCase<AddDishToCartRequest, AddDi
             );
 
         } catch (CannotMixRestaurantsException | ValidationException | EntityNotFoundException e) {
-            // Gérer les erreurs de validation et d'entités non trouvées
+
+            e.printStackTrace();
+
             return new AddDishToCartResponse(
                     null,
                     0,
@@ -64,9 +66,7 @@ public class AddDishToCartUseCase implements UseCase<AddDishToCartRequest, AddDi
                     false
             );
         }
-    }
-
-    private void validateAndGetUser(UUID userId) {
+    }    private void validateAndGetUser(UUID userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
     }

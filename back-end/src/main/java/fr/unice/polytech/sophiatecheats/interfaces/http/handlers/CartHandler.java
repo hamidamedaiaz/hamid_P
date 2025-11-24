@@ -40,10 +40,10 @@ public class CartHandler implements RouteHandler {
 
                 case "POST":
                     if (path.contains("/payment")) {
-                        // PAIEMENT → Transformation du panier en commande
+                        //  Transformation du panier en commande
                         processPayment(exchange, pathParams.get("userId"), sender);
                     } else if (path.contains("/delivery-slot")) {
-                        // SÉLECTION DU CRÉNEAU → Ajouter au panier
+                        // SÉLECTION DU CRÉNEAU  Onn l Ajouter au panier
                         selectDeliverySlotForCart(exchange, pathParams.get("userId"), sender);
                     } else if (path.contains("/items")) {
                         addItemToCart(exchange, sender);
@@ -92,18 +92,33 @@ public class CartHandler implements RouteHandler {
     }
 
     private void getCart(String userId, ResponseSender sender) throws IOException {
+        try {
+            FindCartRequest request = new FindCartRequest(UUID.fromString(userId));
+            FindCartResponse response = facade.findCart(request);
 
-        FindCartRequest request = new FindCartRequest(UUID.fromString(userId));
-        FindCartResponse response = facade.findCart(request);
-        var cart = facade.findCart(request);
+            // Vérifier si le panier existe
+            if (response == null || response.cartId() == null) {
+                sender.send(
+                        HttpUtils.RESOURCE_NOT_FOUND,
+                        "{\"error\":\"Aucun panier actif trouvé pour cet utilisateur\",\"userId\":\"" + userId + "\"}",
+                        Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON)
+                );
+                return;
+            }
 
-        if (cart.isValid()) {
-            sender.send(HttpUtils.RESOURCE_NOT_FOUND, "Panier non trouvé", null);
-            return;
+            sender.send(
+                    HttpUtils.OK,
+                    JaxsonUtils.toJson(response),
+                    Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON)
+            );
+
+        } catch (IllegalArgumentException e) {
+            sender.send(
+                    HttpUtils.BAD_REQUEST,
+                    "{\"error\":\"UUID utilisateur invalide\"}",
+                    Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON)
+            );
         }
-
-        sender.send(HttpUtils.OK, JaxsonUtils.toJson(response),
-                Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON));
     }
 
     private void clearCart(String userId, ResponseSender sender) throws IOException {
@@ -149,9 +164,9 @@ public class CartHandler implements RouteHandler {
             OrderDto order = facade.getOrder(orderResponse.orderId());
 
             sender.send(
-                HttpUtils.CREATED,
-                JaxsonUtils.toJson(order),
-                Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON)
+                    HttpUtils.CREATED,
+                    JaxsonUtils.toJson(order),
+                    Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON)
             );
 
         } catch (ValidationException e) {
@@ -170,27 +185,18 @@ public class CartHandler implements RouteHandler {
      */
     private void sendPaymentError(ResponseSender sender, String errorMessage, int statusCode) throws IOException {
         String errorResponse = String.format(
-            "{\"error\":\"Échec du paiement\",\"message\":\"%s\",\"status\":\"FAILED\"}",
-            errorMessage.replace("\"", "\\\"")  // Échapper les guillemets
+                "{\"error\":\"Échec du paiement\",\"message\":\"%s\",\"status\":\"FAILED\"}",
+                errorMessage.replace("\"", "\\\"")  // Échapper les guillemets
         );
 
         sender.send(
-            statusCode,
-            errorResponse,
-            Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON)
+                statusCode,
+                errorResponse,
+                Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON)
         );
     }
 
-    /**
-     * POST /api/cart/{userId}/delivery-slot
-     * Sélectionne un créneau de livraison et l'ajoute au panier.
-     * Le créneau sera utilisé lors du paiement (PlaceOrderUseCase).
-     *
-     * Body attendu :
-     * {
-     *   "deliverySlotId": "slot-uuid"
-     * }
-     */
+
     private void selectDeliverySlotForCart(HttpExchange exchange, String userId, ResponseSender sender) throws IOException {
         try {
             // Lire le body
@@ -203,18 +209,16 @@ public class CartHandler implements RouteHandler {
                 return;
             }
 
-            // Déléguer à la facade (comme dans processPayment)
             facade.setDeliverySlotToCart(UUID.fromString(userId), UUID.fromString(deliverySlotId));
 
-            // Succès
             sender.send(
-                HttpUtils.OK,
-                JaxsonUtils.toJson(java.util.Map.of(
-                    "success", true,
-                    "message", "Créneau de livraison sélectionné",
-                    "deliverySlotId", deliverySlotId
-                )),
-                java.util.Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON)
+                    HttpUtils.OK,
+                    JaxsonUtils.toJson(java.util.Map.of(
+                            "success", true,
+                            "message", "Créneau de livraison sélectionné",
+                            "deliverySlotId", deliverySlotId
+                    )),
+                    java.util.Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON)
             );
 
         } catch (EntityNotFoundException e) {
