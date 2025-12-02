@@ -201,15 +201,23 @@ public class CartHandler implements RouteHandler {
         try {
             // Lire le body
             String json = new String(exchange.getRequestBody().readAllBytes());
+            System.out.println("🎯 [selectDeliverySlotForCart] Received JSON: " + json);
+            System.out.println("🆔 [selectDeliverySlotForCart] UserId: " + userId);
+
             var request = JaxsonUtils.fromJson(json, java.util.Map.class);
             String deliverySlotId = (String) request.get("deliverySlotId");
 
             if (deliverySlotId == null) {
+                System.err.println("❌ [selectDeliverySlotForCart] deliverySlotId is null!");
                 sendPaymentError(sender, "deliverySlotId est requis", HttpUtils.BAD_REQUEST);
                 return;
             }
 
+            System.out.println("📦 [selectDeliverySlotForCart] Attempting to select slot: " + deliverySlotId + " for user: " + userId);
+
             facade.setDeliverySlotToCart(UUID.fromString(userId), UUID.fromString(deliverySlotId));
+
+            System.out.println("✅ [selectDeliverySlotForCart] Slot selected successfully!");
 
             sender.send(
                     HttpUtils.OK,
@@ -222,10 +230,16 @@ public class CartHandler implements RouteHandler {
             );
 
         } catch (EntityNotFoundException e) {
+            System.err.println("❌ [selectDeliverySlotForCart] EntityNotFoundException: " + e.getMessage());
+            e.printStackTrace();
             sendPaymentError(sender, e.getMessage(), HttpUtils.RESOURCE_NOT_FOUND);
         } catch (ValidationException e) {
+            System.err.println("❌ [selectDeliverySlotForCart] ValidationException: " + e.getMessage());
+            e.printStackTrace();
             sendPaymentError(sender, e.getMessage(), HttpUtils.BAD_REQUEST);
         } catch (Exception e) {
+            System.err.println("❌ [selectDeliverySlotForCart] Exception: " + e.getMessage());
+            e.printStackTrace();
             sendPaymentError(sender, "Erreur lors de la sélection du créneau: " + e.getMessage(), HttpUtils.INTERNAL_SERVER_ERROR);
         }
     }

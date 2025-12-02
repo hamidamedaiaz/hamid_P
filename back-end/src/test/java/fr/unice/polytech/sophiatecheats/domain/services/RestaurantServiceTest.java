@@ -8,7 +8,9 @@ import fr.unice.polytech.sophiatecheats.domain.exceptions.DuplicateRestaurantExc
 import fr.unice.polytech.sophiatecheats.domain.exceptions.RestaurantNotFoundException;
 import fr.unice.polytech.sophiatecheats.domain.exceptions.RestaurantValidationException;
 import fr.unice.polytech.sophiatecheats.domain.repositories.RestaurantRepository;
+import fr.unice.polytech.sophiatecheats.domain.repositories.TimeSlotRepository;
 import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryRestaurantRepository;
+import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryTimeSlotRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -27,12 +29,14 @@ import static org.mockito.Mockito.*;
 class RestaurantServiceTest {
 
     private RestaurantRepository repository;
+    private fr.unice.polytech.sophiatecheats.domain.repositories.TimeSlotRepository timeSlotRepository;
     private RestaurantService service;
 
     @BeforeEach
     void setUp() {
         repository = Mockito.mock(RestaurantRepository.class);
-        service = new RestaurantService(repository);
+        timeSlotRepository = Mockito.mock(fr.unice.polytech.sophiatecheats.domain.repositories.TimeSlotRepository.class);
+        service = new RestaurantService(repository, timeSlotRepository);
     }
 
     @Test
@@ -91,7 +95,9 @@ class RestaurantServiceTest {
     @Test
     void testCreateAndFindRestaurant() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         Restaurant created = service.createRestaurant("CROUS", "Valbonne");
 
@@ -104,7 +110,9 @@ class RestaurantServiceTest {
     @Test
     void testCreateDuplicateRestaurantThrowsDuplicateRestaurantException() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         Restaurant first = service.createRestaurant("CROUS", "Valbonne");
 
@@ -116,7 +124,9 @@ class RestaurantServiceTest {
     @Test
     void testUpdateRestaurantNameSuccessfully() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         Restaurant created = service.createRestaurant("CROUS", "Valbonne");
         Restaurant saved = repo.findById(created.getId()).orElseThrow();
@@ -131,7 +141,9 @@ class RestaurantServiceTest {
     @Test
     void testUpdateRestaurantAddressSuccessfully() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         Restaurant created = service.createRestaurant("CROUS", "Valbonne");
         Restaurant saved = repo.findById(created.getId()).orElseThrow();
@@ -146,7 +158,9 @@ class RestaurantServiceTest {
     @Test
     void testUpdateRestaurantNameDoesNothingIfNullOrBlank() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         service.createRestaurant("CROUS", "Valbonne");
         Restaurant saved = repo.findAll().getFirst();
@@ -161,7 +175,9 @@ class RestaurantServiceTest {
     @Test
     void testUpdateRestaurantAddressDoesNothingIfNullOrBlank() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         service.createRestaurant("CROUS", "Valbonne");
         Restaurant saved = repo.findAll().getFirst();
@@ -174,7 +190,9 @@ class RestaurantServiceTest {
     @Test
     void testUpdateOpeningHoursSuccessfully() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         service.createRestaurant("CROUS", "Valbonne");
         Restaurant saved = repo.findAll().getFirst();
@@ -195,7 +213,9 @@ class RestaurantServiceTest {
     @Test
     void testOpenRestaurantSuccessfully() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         service.createRestaurant("CROUS", "Valbonne");
         Restaurant saved = repo.findAll().getFirst();
@@ -210,7 +230,9 @@ class RestaurantServiceTest {
     @Test
     void testCloseRestaurantSuccessfully() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         service.createRestaurant("CROUS", "Valbonne");
         Restaurant saved = repo.findAll().getFirst();
@@ -230,7 +252,9 @@ class RestaurantServiceTest {
     @Test
     void testDeleteRestaurantSuccessfully() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         service.createRestaurant("CROUS", "Valbonne");
         Restaurant saved = repo.findAll().getFirst();
@@ -242,7 +266,9 @@ class RestaurantServiceTest {
     @Test
     void testDeleteRestaurantThrowsIfNotFound() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         assertThrows(RestaurantNotFoundException.class, () -> service.deleteRestaurant(UUID.randomUUID()));
     }
@@ -250,7 +276,9 @@ class RestaurantServiceTest {
     @Test
     void testAddDishToRestaurant() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         Restaurant r = service.createRestaurant("CROUS", "Valbonne");
 
@@ -264,7 +292,9 @@ class RestaurantServiceTest {
     @Test
     void testRemoveDishFromRestaurant() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         Restaurant r = service.createRestaurant("CROUS", "Valbonne");
         service.addDishToRestaurant(r.getId(), "Pizza", "Delicious", BigDecimal.valueOf(8.5), DishCategory.MAIN_COURSE);
@@ -278,7 +308,9 @@ class RestaurantServiceTest {
     @Test
     void testModifyDishProperties() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         service.createRestaurant("CROUS", "Valbonne");
         Restaurant r = repo.findAll().getFirst();
@@ -300,7 +332,9 @@ class RestaurantServiceTest {
     @Test
     void testGetAvailableDishes() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         service.createRestaurant("CROUS", "Valbonne");
         Restaurant r = repo.findAll().getFirst();
@@ -314,7 +348,9 @@ class RestaurantServiceTest {
     @Test
     void testGenerateAndReserveDeliverySlots() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         service.createRestaurant("CROUS", "Valbonne");
         Restaurant r = repo.findAll().getFirst();
@@ -338,7 +374,9 @@ class RestaurantServiceTest {
     @Test
     void testListRestaurantsByCategoryAndOpen() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
 
         service.createRestaurant("CROUS", "Valbonne");
         service.createRestaurant("Mensa", "Nice");
@@ -365,7 +403,9 @@ class RestaurantServiceTest {
     @Test
     void testGetOpenedRestaurantsTodayAt() {
         InMemoryRestaurantRepository repo = new InMemoryRestaurantRepository(false);
-        service = new RestaurantService(repo);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
+        service = new RestaurantService(repo, timeSlotRepo);
         service.createRestaurant("CROUS", "Valbonne");
         service.createRestaurant("Mensa", "Nice");
         List<Restaurant> all = repo.findAll();

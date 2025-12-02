@@ -8,18 +8,19 @@ import fr.unice.polytech.sophiatecheats.interfaces.http.ApiRegistry;
 import fr.unice.polytech.sophiatecheats.interfaces.http.handlers.CatalogHandler;
 import fr.unice.polytech.sophiatecheats.interfaces.http.handlers.DeliverySlotApiHandler;
 import fr.unice.polytech.sophiatecheats.interfaces.http.handlers.RestaurantHandler;
+import fr.unice.polytech.sophiatecheats.interfaces.http.handlers.RestaurantOrdersHandler;
 
 import java.net.InetSocketAddress;
 import java.util.logging.Logger;
 
 /**
  * Restaurant Service - Gère l'interface restaurant.
- * Permet aux restaurants de:
- * - Gérer leur menu (ajouter/modifier/supprimer des plats)
- * - Gérer leurs créneaux de livraison
+ * Permet aux restaurants de :
+ * – Gérer leur menu (ajouter/modifier/supprimer des plats)
+ * – Gérer leurs créneaux de livraison
  * - Gérer leurs informations (horaires, disponibilité, etc.)
- *
- * Port: 8081
+ * <p>
+ * Port : 8081
  */
 public class RestaurantServiceApplication {
 
@@ -47,7 +48,7 @@ public class RestaurantServiceApplication {
         this.facade = new SophiaTechEatsFacade(config);
     }
 
-    public static void main(String[] args) {
+  public   static void main(String[] args) {
         RestaurantServiceApplication service = new RestaurantServiceApplication();
         service.start();
     }
@@ -87,6 +88,7 @@ public class RestaurantServiceApplication {
             Thread.currentThread().join();
 
         } catch (Exception e) {
+            Thread.currentThread().interrupt();
             logger.severe("Erreur critique au démarrage: " + e.getMessage());
             e.printStackTrace();
         }
@@ -101,11 +103,15 @@ public class RestaurantServiceApplication {
         RestaurantHandler restaurantHandler = new RestaurantHandler(facade);
         CatalogHandler catalogHandler = new CatalogHandler(restaurantService);
         DeliverySlotApiHandler deliverySlotHandler = new DeliverySlotApiHandler(facade);
+        RestaurantOrdersHandler restaurantOrdersHandler = new RestaurantOrdersHandler(facade);
 
         ApiRegistry registry = new ApiRegistry();
         // Routes de liste des restaurants (lecture seule)
         registry.registerRoute(GET, RESTAURANT_PATH, restaurantHandler);
         registry.registerRoute(GET, RESTAURANT_BY_ID_PATH, restaurantHandler);
+
+        // Route pour obtenir les commandes d'un restaurant
+        registry.registerRoute(GET, RESTAURANT_BY_ID_PATH + "/orders", restaurantOrdersHandler);
         // Routes de gestion du menu
 
         registry.registerRoute(GET, RESTAURANT_BY_ID_PATH + "/menu", catalogHandler);

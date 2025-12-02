@@ -15,10 +15,12 @@ import fr.unice.polytech.sophiatecheats.domain.exceptions.InvalidCartOperationEx
 import fr.unice.polytech.sophiatecheats.domain.exceptions.SlotNotFoundException;
 import fr.unice.polytech.sophiatecheats.domain.repositories.CartRepository;
 import fr.unice.polytech.sophiatecheats.domain.repositories.OrderRepository;
+import fr.unice.polytech.sophiatecheats.domain.repositories.TimeSlotRepository;
 import fr.unice.polytech.sophiatecheats.domain.services.RestaurantService;
 import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryCartRepository;
 import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryOrderRepository;
 import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryRestaurantRepository;
+import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryTimeSlotRepository;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -54,8 +56,10 @@ public class PlaceOrderStepDefs {
         cartRepository = new InMemoryCartRepository();
         orderRepository = new InMemoryOrderRepository();
         InMemoryRestaurantRepository restaurantRepo = new InMemoryRestaurantRepository(false);
+        TimeSlotRepository timeSlotRepo =
+                new InMemoryTimeSlotRepository();
 
-        restaurantService = new RestaurantService(restaurantRepo);
+        restaurantService = new RestaurantService(restaurantRepo, timeSlotRepo);
 
         caughtException = null;
         lastOrder = null;

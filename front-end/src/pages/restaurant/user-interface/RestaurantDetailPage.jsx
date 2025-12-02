@@ -1,15 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Menu from '../../../components/restaurant/Menu.jsx';
 import Header from '../../../components/common/Header.jsx';
-import Footer from '../../../components/common/Footer.jsx';
-import {fetchRestaurantDetails} from "../../../services/restaurantService.js";
+import { fetchRestaurantDetails } from "../../../services/restaurantService.js";
 import LoadingSpinner from "../../../components/common/LoadingSpinner.jsx";
 
 import "./RestaurantDetailPage.css"
 
 export default function RestaurantDetailPage() {
-    const {id} = useParams();
+    const { id } = useParams();
     const [resto, setResto] = useState(null);
 
     useEffect(() => {
@@ -18,17 +17,15 @@ export default function RestaurantDetailPage() {
         }
     }, [id]);
 
-    if (!resto) return <LoadingSpinner/>;
+    if (!resto) return <LoadingSpinner />;
 
     return (
         <div className="menu-page">
-            <Header title="Restaurant Details"/>
+            <Header title="Restaurant Details" />
 
             <div className="menu-content">
-                <Menu restaurant={resto}/>
+                <Menu restaurant={resto} />
             </div>
-
-            <Footer/>
         </div>
     );
 }

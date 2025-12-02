@@ -16,11 +16,7 @@ import fr.unice.polytech.sophiatecheats.domain.enums.PaymentMethod;
 import fr.unice.polytech.sophiatecheats.domain.exceptions.EntityNotFoundException;
 import fr.unice.polytech.sophiatecheats.domain.exceptions.InsufficientCreditException;
 import fr.unice.polytech.sophiatecheats.domain.exceptions.ValidationException;
-import fr.unice.polytech.sophiatecheats.domain.repositories.CartRepository;
-import fr.unice.polytech.sophiatecheats.domain.repositories.OrderRepository;
-import fr.unice.polytech.sophiatecheats.domain.repositories.RestaurantRepository;
-import fr.unice.polytech.sophiatecheats.domain.repositories.TimeSlotRepository;
-import fr.unice.polytech.sophiatecheats.domain.repositories.UserRepository;
+import fr.unice.polytech.sophiatecheats.domain.repositories.*;
 import fr.unice.polytech.sophiatecheats.domain.services.payment.PaymentResult;
 import fr.unice.polytech.sophiatecheats.domain.services.payment.PaymentStrategy;
 import fr.unice.polytech.sophiatecheats.domain.services.payment.PaymentStrategyFactory;
@@ -110,29 +106,29 @@ public class PlaceOrderUseCase implements UseCase<PlaceOrderRequest, PlaceOrderR
 
         if (!cart.hasDeliverySlot()) {
             throw new ValidationException(
-                "Vous devez sélectionner un créneau de livraison avant de payer.");
+                    "Vous devez sélectionner un créneau de livraison avant de payer.");
         }
 
         UUID deliverySlotId = cart.getDeliverySlotId();
         TimeSlot deliverySlot = timeSlotRepository.findById(deliverySlotId)
                 .orElseThrow(() -> new ValidationException(
-                    "Le créneau de livraison sélectionné n'existe plus."));
+                        "Le créneau de livraison sélectionné n'existe plus."));
 
         // Vérifier que le créneau appartient bien au restaurant
         if (!deliverySlot.getRestaurantId().equals(request.restaurantId())) {
             throw new ValidationException(
-                "Le créneau de livraison ne correspond pas au restaurant sélectionné.");
+                    "Le créneau de livraison ne correspond pas au restaurant sélectionné.");
         }
 
 
         if (!deliverySlot.isAvailable()) {
             throw new ValidationException(
-                "Le créneau de livraison sélectionné n'est plus disponible. Veuillez en choisir un autre.");
+                    "Le créneau de livraison sélectionné n'est plus disponible. Veuillez en choisir un autre.");
         }
 
         if (deliverySlot.getReservedCount() >= deliverySlot.getMaxCapacity()) {
             throw new ValidationException(
-                "Le créneau de livraison est complet. Veuillez en choisir un autre.");
+                    "Le créneau de livraison est complet. Veuillez en choisir un autre.");
         }
 
         // Transformer les CartItems en OrderItems
@@ -148,8 +144,8 @@ public class PlaceOrderUseCase implements UseCase<PlaceOrderRequest, PlaceOrderR
 
         LocalDate slotDate = deliverySlot.getStartTime().toLocalDate();
         var validateSlotInput = new ValidateDeliverySlotUseCase.Input(
-            deliverySlotId,  // Utiliser la variable deliverySlotId du panier
-            slotDate
+                deliverySlotId,  // Utiliser la variable deliverySlotId du panier
+                slotDate
         );
 
 
@@ -161,10 +157,9 @@ public class PlaceOrderUseCase implements UseCase<PlaceOrderRequest, PlaceOrderR
                 userRepository.save(user);
             }
             throw new ValidationException(
-                "Le créneau de livraison a été pris par un autre client pendant votre paiement. " +
-                "Votre paiement a été annulé. Veuillez sélectionner un autre créneau et réessayer.");
+                    "Le créneau de livraison a été pris par un autre client pendant votre paiement. " +
+                            "Votre paiement a été annulé. Veuillez sélectionner un autre créneau et réessayer.");
         }
-
 
 
         // Créer la commande à partir du panier

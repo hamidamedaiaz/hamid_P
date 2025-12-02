@@ -181,16 +181,32 @@ public class RestaurantService {
     }
 
     public void generateDeliverySlots(UUID restaurantId, LocalDate date, LocalTime start, LocalTime end, int maxCapacityPerSlot) {
+        System.out.println("🎯 [RestaurantService] Generating slots for restaurant: " + restaurantId);
         Restaurant r = getRestaurantById(restaurantId);
+        System.out.println("📍 [RestaurantService] Restaurant found: " + r.getName());
+        System.out.println("📅 [RestaurantService] Slots before generation: " + r.getDeliverySchedule().getSlotsForDate(date).size());
+
         r.getDeliverySchedule().generateDailySlots(date, start, end, maxCapacityPerSlot);
 
-        // Sauvegarder les créneaux dans TimeSlotRepository pour qu'ils soient accessibles par SelectDeliverySlotUseCase
         List<TimeSlot> generatedSlots = r.getDeliverySchedule().getSlotsForDate(date);
+        System.out.println("✅ [RestaurantService] Generated " + generatedSlots.size() + " slots");
+
+        // Sauvegarder les créneaux dans TimeSlotRepository pour qu'ils soient accessibles par SelectDeliverySlotUseCase
         for (TimeSlot slot : generatedSlots) {
+            System.out.println("  📦 [RestaurantService] Saving slot: " + slot.getId() + " (" + slot.getStartTime() + " - " + slot.getEndTime() + ")");
             timeSlotRepository.save(slot);
         }
 
+        System.out.println("💾 [RestaurantService] Saving restaurant with slots...");
         repository.save(r);
+        System.out.println("✅ [RestaurantService] Restaurant saved!");
+
+        // Verify the restaurant was saved correctly
+        Restaurant verified = repository.findById(restaurantId).orElse(null);
+        if (verified != null) {
+            int slotsAfterSave = verified.getDeliverySchedule().getSlotsForDate(date).size();
+            System.out.println("🔍 [RestaurantService] Verification: Restaurant has " + slotsAfterSave + " slots after save");
+        }
     }
 
     public List<TimeSlot> getDeliverySlots(UUID restaurantId, LocalDate date) {

@@ -49,10 +49,6 @@ public class ApiRegistry {
     public void dispatch(HttpExchange exchange) throws IOException {
         String requestMethod = exchange.getRequestMethod().toUpperCase();
 
-        // Toujours appliquer CORS
-        applyCorsHeaders(exchange);
-
-        // Intercepter toutes les OPTIONS et répondre 204
         if ("OPTIONS".equals(requestMethod)) {
             exchange.sendResponseHeaders(204, -1); // No content
             exchange.close();
@@ -85,15 +81,7 @@ public class ApiRegistry {
         sendResponse(exchange, 404, "{\"error\":\"Route not found\"}", null);
     }
 
-    private void applyCorsHeaders(HttpExchange exchange) {
-        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
-        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, X-Requested-With");
-        exchange.getResponseHeaders().set("Access-Control-Allow-Credentials", "true");
-    }
-
     private void sendResponse(HttpExchange exchange, int statusCode, String response, Map<String, String> headers) throws IOException {
-        applyCorsHeaders(exchange);
 
         if (headers != null) {
             headers.forEach(exchange.getResponseHeaders()::set);

@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import fr.unice.polytech.sophiatecheats.application.dto.restaurant.RestaurantDto;
 import fr.unice.polytech.sophiatecheats.application.dto.restaurant.dishManagement.DishDto;
 import fr.unice.polytech.sophiatecheats.application.facade.SophiaTechEatsFacade;
+import fr.unice.polytech.sophiatecheats.domain.entities.restaurant.Restaurant;
 import fr.unice.polytech.sophiatecheats.domain.enums.DietType;
 import fr.unice.polytech.sophiatecheats.domain.enums.RestaurantType;
 import fr.unice.polytech.sophiatecheats.interfaces.http.utils.HttpUtils;
@@ -11,7 +12,9 @@ import fr.unice.polytech.sophiatecheats.interfaces.http.utils.JaxsonUtils;
 import fr.unice.polytech.sophiatecheats.interfaces.http.utils.ResponseSender;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -20,9 +23,6 @@ import java.util.stream.Collectors;
 
 /**
  * HTTP handler pour les opérations liées aux restaurants.
- * Pour le moment, on a juste la gestion des restaurants (CRUD).
- * Les autres opérations sur les restaurants (gestion des plats, des créneaux, etc.)
- * peuvent être ajoutées ici ultérieurement.
  */
 public class RestaurantHandler implements RouteHandler {
 
@@ -35,7 +35,6 @@ public class RestaurantHandler implements RouteHandler {
     @Override
     public void handle(HttpExchange exchange, Map<String, String> pathParams, ResponseSender sender) throws IOException {
         // CORS is handled by ApiRegistry
-
         String method = exchange.getRequestMethod();
 
         try {
@@ -45,6 +44,19 @@ public class RestaurantHandler implements RouteHandler {
                         getRestaurantById(UUID.fromString(pathParams.get("id")), sender);
                     } else {
                         handleFilteredRestaurantList(exchange, sender);
+                    }
+                    break;
+                case "POST":
+                    createRestaurant(exchange, sender);
+                    break;
+                case "PUT":
+                    if (pathParams.containsKey("id")) {
+                        updateRestaurant(exchange, UUID.fromString(pathParams.get("id")), sender);
+                    }
+                    break;
+                case "DELETE":
+                    if (pathParams.containsKey("id")) {
+                        deleteRestaurant(UUID.fromString(pathParams.get("id")), sender);
                     }
                     break;
                 case "OPTIONS":
@@ -138,5 +150,35 @@ public class RestaurantHandler implements RouteHandler {
             return;
         }
         sender.send(HttpUtils.OK, JaxsonUtils.toJson(r), Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON));
+    }
+
+    private void createRestaurant(HttpExchange exchange, ResponseSender sender) throws IOException {
+        InputStream is = exchange.getRequestBody();
+        String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        RestaurantDto dto = JaxsonUtils.fromJson(json, RestaurantDto.class);
+        if (dto == null) throw new IllegalArgumentException("Invalid restaurant JSON");
+
+        Restaurant r = facade.createRestaurant(dto.name(), dto.address());
+
+        sender.send(HttpUtils.CREATED, "Restaurant created with ID: " + r.getId(), Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.TEXT_PLAIN));
+    }
+
+    private void updateRestaurant(HttpExchange exchange, UUID id, ResponseSender sender) throws IOException {
+        InputStream is = exchange.getRequestBody();
+        String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        RestaurantDto dto = JaxsonUtils.fromJson(json, RestaurantDto.class);
+        if (dto == null) throw new IllegalArgumentException("Invalid restaurant JSON");
+
+        if (dto.name() != null) facade.updateRestaurantName(id, dto.name());
+        if (dto.address() != null) facade.updateRestaurantAddress(id, dto.address());
+        if (dto.openingTime() != null && dto.closingTime() != null)
+            facade.updateRestaurantOpeningHours(id, dto.openingTime(), dto.closingTime());
+
+        sender.send(HttpUtils.OK, "Restaurant updated successfully.", Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.TEXT_PLAIN));
+    }
+
+    private void deleteRestaurant(UUID id, ResponseSender sender) throws IOException {
+        facade.deleteRestaurant(id);
+        sender.send(HttpUtils.NO_CONTENT, "", null);
     }
 }

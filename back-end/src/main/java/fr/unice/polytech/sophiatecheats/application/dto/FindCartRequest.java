@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public record FindCartRequest(
         UUID userId
-) implements DTO{
+) implements DTO {
 
     @Override
     public boolean isValid() {

@@ -1,11 +1,6 @@
 package fr.unice.polytech.sophiatecheats.infrastructure.config;
 
-import fr.unice.polytech.sophiatecheats.application.usecases.cart.AddDishToCartUseCase;
-import fr.unice.polytech.sophiatecheats.application.usecases.cart.CancelCartUseCase;
-import fr.unice.polytech.sophiatecheats.application.usecases.cart.ClearCartUseCase;
-import fr.unice.polytech.sophiatecheats.application.usecases.cart.FindActiveCartUseCase;
-import fr.unice.polytech.sophiatecheats.application.usecases.cart.RemoveDishFromCartUseCase;
-import fr.unice.polytech.sophiatecheats.application.usecases.cart.UpdateCartItemUseCase;
+import fr.unice.polytech.sophiatecheats.application.usecases.cart.*;
 import fr.unice.polytech.sophiatecheats.application.usecases.order.ConfirmOrderUseCase;
 import fr.unice.polytech.sophiatecheats.application.usecases.order.InitiatePaymentUseCase;
 import fr.unice.polytech.sophiatecheats.application.usecases.order.SelectDeliverySlotUseCase;
@@ -17,20 +12,12 @@ import fr.unice.polytech.sophiatecheats.application.usecases.user.delivery.GetAv
 import fr.unice.polytech.sophiatecheats.application.usecases.user.delivery.ValidateDeliverySlotUseCase;
 import fr.unice.polytech.sophiatecheats.application.usecases.user.order.GetOrderUseCase;
 import fr.unice.polytech.sophiatecheats.application.usecases.user.order.PlaceOrderUseCase;
-import fr.unice.polytech.sophiatecheats.domain.repositories.CartRepository;
-import fr.unice.polytech.sophiatecheats.domain.repositories.OrderRepository;
-import fr.unice.polytech.sophiatecheats.domain.repositories.RestaurantRepository;
-import fr.unice.polytech.sophiatecheats.domain.repositories.TimeSlotRepository;
-import fr.unice.polytech.sophiatecheats.domain.repositories.UserRepository;
+import fr.unice.polytech.sophiatecheats.domain.repositories.*;
 import fr.unice.polytech.sophiatecheats.domain.services.DeliveryService;
 import fr.unice.polytech.sophiatecheats.domain.services.RestaurantService;
 import fr.unice.polytech.sophiatecheats.domain.services.photoai.PhotoAnalysisService;
 import fr.unice.polytech.sophiatecheats.infrastructure.external.MockAIPhotoAnalysisService;
-import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryCartRepository;
-import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryOrderRepository;
-import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryRestaurantRepository;
-import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryTimeSlotRepository;
-import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.InMemoryUserRepository;
+import fr.unice.polytech.sophiatecheats.infrastructure.repositories.memory.*;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.behaviors.Caching;
@@ -106,6 +93,9 @@ public class ApplicationConfig {
         container.addComponent(AddDishToRestaurantUseCase.class);
         container.addComponent(UpdateDishUseCase.class);
         container.addComponent(RemoveDishFromRestaurantUseCase.class);
+
+        // Restaurant Order Management Use Cases
+        container.addComponent(fr.unice.polytech.sophiatecheats.application.usecases.restaurant.GetRestaurantOrdersUseCase.class);
     }
 
     /**

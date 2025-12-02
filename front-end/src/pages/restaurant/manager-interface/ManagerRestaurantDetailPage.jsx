@@ -11,7 +11,7 @@ export default function ManagerRestaurantDetailPage() {
 
     return (
         <div>
-            <Header title="Restaurant Manager"/>
+            <Header title="Restaurant Manager" showCart={false}/>
             <ManageRestaurant restaurantId={id}/>
             <Footer/>
         </div>

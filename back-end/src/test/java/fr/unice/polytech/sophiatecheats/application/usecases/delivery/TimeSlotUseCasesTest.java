@@ -7,6 +7,7 @@ import fr.unice.polytech.sophiatecheats.application.usecases.user.delivery.Valid
 import fr.unice.polytech.sophiatecheats.domain.entities.restaurant.TimeSlot;
 import fr.unice.polytech.sophiatecheats.domain.exceptions.SlotNotFoundException;
 import fr.unice.polytech.sophiatecheats.domain.repositories.RestaurantRepository;
+import fr.unice.polytech.sophiatecheats.domain.repositories.TimeSlotRepository;
 import fr.unice.polytech.sophiatecheats.domain.services.DeliveryService;
 import fr.unice.polytech.sophiatecheats.domain.services.RestaurantService;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,8 +38,10 @@ class TimeSlotUseCasesTest {
     @BeforeEach
     void setUp() {
         repository = Mockito.mock(RestaurantRepository.class);
+        TimeSlotRepository timeSlotRepository =
+                Mockito.mock(fr.unice.polytech.sophiatecheats.domain.repositories.TimeSlotRepository.class);
 
-        restaurantService = new RestaurantService(repository);
+        restaurantService = new RestaurantService(repository, timeSlotRepository);
         deliveryService = Mockito.mock(DeliveryService.class);
 
         getAvailableUC = new GetAvailableDeliverySlotsUseCase(restaurantService);

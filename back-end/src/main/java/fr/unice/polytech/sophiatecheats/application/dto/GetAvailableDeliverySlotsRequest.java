@@ -7,7 +7,7 @@ public record GetAvailableDeliverySlotsRequest(
         LocalDate date
 ) implements DTO {
     public boolean isValid() {
-        return restaurantId!=null && date!=null;
+        return restaurantId != null && date != null;
     }
 
 }

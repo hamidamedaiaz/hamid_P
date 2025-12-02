@@ -5,6 +5,8 @@ import AddDishForm from "./form/AddDishForm.jsx";
 import UpdateDishForm from "./form/UpdateDishForm.jsx";
 import UpdateRestaurantForm from "./form/UpdateRestaurantForm.jsx";
 import LoadingSpinner from "../common/LoadingSpinner.jsx";
+import RestaurantOrders from "./RestaurantOrders.jsx";
+import DeliverySlotManager from "./DeliverySlotManager.jsx";
 
 import "./ManageRestaurant.css";
 
@@ -38,6 +40,20 @@ export default function ManageRestaurant({restaurantId}) {
             <section className="section update-restaurant">
                 <h3 className="section-title">Update Information</h3>
                 <UpdateRestaurantForm restaurant={restaurant} onUpdated={loadRestaurant}/>
+            </section>
+
+            <hr className="divider"/>
+
+            {/* Delivery Slots Management */}
+            <section className="section delivery-slots-section">
+                <DeliverySlotManager restaurantId={restaurantId} />
+            </section>
+
+            <hr className="divider"/>
+
+            {/* Restaurant Orders */}
+            <section className="section orders-section">
+                <RestaurantOrders restaurantId={restaurantId} />
             </section>
 
             <hr className="divider"/>

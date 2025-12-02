@@ -13,10 +13,10 @@ class MockAIPhotoAnalysisServiceTest {
         PhotoAnalysisService service = new MockAIPhotoAnalysisService();
         byte[] dummyImage = new byte[]{1, 2, 3};
         PhotoAnalysisResult result = service.analyze(dummyImage);
-        assertEquals("Plat appétissant avec légumes frais.", result.getDescription());
-        assertEquals("plat", result.getCategory());
-        assertTrue(result.getTags().contains("végétarien"));
-        assertTrue(result.getTags().contains("sans gluten"));
+        assertEquals("Plat appétissant avec légumes frais.", result.description());
+        assertEquals("plat", result.category());
+        assertTrue(result.tags().contains("végétarien"));
+        assertTrue(result.tags().contains("sans gluten"));
     }
 
     @Test

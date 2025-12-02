@@ -1,7 +1,7 @@
 .home-page {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     width: 100vw;
 }
 
@@ -12,7 +12,6 @@
     display: grid;
     align-items: center;
     justify-items: center;
-    grid-row: 1;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -27,18 +26,17 @@
     color: white;
     padding: 14px 24px;
     text-align: center;
-    grid-row: 3;
     font-size: 0.95rem;
     box-shadow: 0 -3px 8px rgba(0, 0, 0, 0.1);
 }
 
 .interface-choice {
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 50px;
-    grid-row: 2;
     text-align: center;
     font-size: 1.8rem;
     color: var(--secondary-color);
@@ -51,7 +49,6 @@
     align-items: center;
     margin-top: 50px;
     color: var(--primary-color);
-    grid-row: 2;
 
     button {
         padding: 12px 24px;

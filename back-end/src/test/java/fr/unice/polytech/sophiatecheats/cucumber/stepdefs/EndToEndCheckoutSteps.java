@@ -144,11 +144,14 @@ public class EndToEndCheckoutSteps {
 
         var place = config.getInstance(PlaceOrderUseCase.class);
         try {
+            // Generate a mock delivery slot ID (in a real scenario, this would be selected by the user)
+            UUID deliverySlotId = UUID.randomUUID();
+
             lastOrderResponse = place.execute(new PlaceOrderRequest(
                     currentUser.getId(),
                     currentRestaurant.getId(),
-                    pm
-                    // TODO: add slot when your DTO supports it
+                    pm,
+                    deliverySlotId
             ));
             lastError = null;
         } catch (Exception e) {

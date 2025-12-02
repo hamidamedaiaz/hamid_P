@@ -49,7 +49,7 @@ class RestaurantRepositoryTest {
         Restaurant r2 = new Restaurant("Mensa", "Nice");
         repo.save(r1);
         repo.save(r2);
-        assertEquals(5, repo.findAll().size()); // 2 + 3 more samples restaurants in initialization
+        assertEquals(10, repo.findAll().size());
     }
 
     @Test

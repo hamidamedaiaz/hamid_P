@@ -30,7 +30,7 @@ public class ApiGatewayApplication {
 
     private static final Logger logger = Logger.getLogger(ApiGatewayApplication.class.getName());
 
-    public static void main(String[] args) {
+   public static void main(String[] args) {
         ApiGatewayApplication gateway = new ApiGatewayApplication();
         gateway.start();
     }
@@ -56,6 +56,7 @@ public class ApiGatewayApplication {
             Thread.currentThread().join();
 
         } catch (Exception e) {
+            Thread.currentThread().interrupt();
             logger.severe("Erreur critique au démarrage du Gateway: " + e.getMessage());
             e.printStackTrace();
         }
@@ -64,11 +65,11 @@ public class ApiGatewayApplication {
     private void routeRequest(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();
         String method = exchange.getRequestMethod();
-
         // CORS headers pour toutes les réponses
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, x-request-id");
+
 
         if ("OPTIONS".equals(method)) {
             exchange.sendResponseHeaders(204, -1);
@@ -76,7 +77,7 @@ public class ApiGatewayApplication {
             return;
         }
 
-        String targetServiceUrl = determineTargetService(path, method);
+        String targetServiceUrl = determineTargetService(path);
 
         if (targetServiceUrl == null) {
             sendErrorResponse(exchange, 404, "Service not found for path: " + path);
@@ -91,7 +92,7 @@ public class ApiGatewayApplication {
         }
     }
 
-    private String determineTargetService(String path, String method) {
+    private String determineTargetService(String path) {
         // Routes Consumer Service (8082) - Actions clients
         if (path.startsWith("/api/cart") || path.startsWith("/api/orders")) {
             return CONSUMER_SERVICE_URL;
@@ -111,8 +112,8 @@ public class ApiGatewayApplication {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         // Configure la connexion
-        connection.setRequestMethod(exchange.getRequestMethod());
-        connection.setDoOutput(true);
+        String method = exchange.getRequestMethod();
+        connection.setRequestMethod(method);
         connection.setDoInput(true);
 
         // Copie les headers de la requête (sauf Host)
@@ -122,8 +123,9 @@ public class ApiGatewayApplication {
             }
         });
 
-        // Envoie le body si présent
-        if (exchange.getRequestBody().available() > 0) {
+        // Envoie le body si présent (seulement pour POST, PUT, etc.)
+        if (!"GET".equals(method) && !"DELETE".equals(method) && exchange.getRequestBody().available() > 0) {
+            connection.setDoOutput(true);
             byte[] requestBody = exchange.getRequestBody().readAllBytes();
             connection.getOutputStream().write(requestBody);
             connection.getOutputStream().flush();
@@ -138,13 +140,14 @@ public class ApiGatewayApplication {
         } catch (IOException e) {
             // En cas d'erreur, lire l'error stream
             responseBody = connection.getErrorStream() != null
-                ? connection.getErrorStream().readAllBytes()
-                : "Service Error".getBytes();
+                    ? connection.getErrorStream().readAllBytes()
+                    : "Service Error".getBytes();
         }
 
-        // Copie les headers de réponse
         connection.getHeaderFields().forEach((key, values) -> {
-            if (key != null && !"Transfer-Encoding".equalsIgnoreCase(key)) {
+            if (key != null &&
+                    !"Transfer-Encoding".equalsIgnoreCase(key) &&
+                    !key.toLowerCase().startsWith("access-control-")) {
                 values.forEach(value -> exchange.getResponseHeaders().add(key, value));
             }
         });

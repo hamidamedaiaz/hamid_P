@@ -9,21 +9,49 @@ import fr.unice.polytech.sophiatecheats.domain.repositories.RestaurantRepository
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * In-memory implementation of RestaurantRepository for MVP.
  * Contains sample data for testing and development.
+ *
+ * IMPORTANT: Uses SHARED STATIC storage to ensure all microservices
+ * (Restaurant Service and Consumer Service) access the same data.
  */
 public class InMemoryRestaurantRepository extends InMemoryRepository<Restaurant, UUID> implements RestaurantRepository {
+
+    // Shared static storage across all instances (all microservices)
+    private static final java.util.concurrent.ConcurrentHashMap<UUID, Restaurant> SHARED_STORAGE = new java.util.concurrent.ConcurrentHashMap<>();
+    private static volatile boolean initialized = false;
 
     public InMemoryRestaurantRepository() {
         this(true);
     }
 
     public InMemoryRestaurantRepository(boolean withSampleData) {
-        if (withSampleData) {
-            initializeWithSampleData();
+        // Use parent constructor with shared storage
+        super(SHARED_STORAGE);
+
+        System.out.println("🏗️ [InMemoryRestaurantRepository] Constructor called - withSampleData=" + withSampleData + ", initialized=" + initialized + ", storage size=" + storage.size());
+
+        // Initialize sample data only once across all instances
+        if (withSampleData && !initialized) {
+            synchronized (InMemoryRestaurantRepository.class) {
+                if (!initialized) {
+                    System.out.println("🔄 [InMemoryRestaurantRepository] Initializing SHARED storage with sample data");
+                    System.out.println("📊 [InMemoryRestaurantRepository] Storage before init: " + storage.size() + " restaurants");
+                    initializeWithSampleData();
+                    initialized = true;
+                    System.out.println("✅ [InMemoryRestaurantRepository] Shared storage initialized with " + storage.size() + " restaurants");
+                }
+            }
+        } else if (withSampleData) {
+            System.out.println("ℹ️ [InMemoryRestaurantRepository] Using existing SHARED storage with " + storage.size() + " restaurants");
+        } else {
+            System.out.println("⚠️ [InMemoryRestaurantRepository] Created WITHOUT sample data, storage has " + storage.size() + " restaurants");
         }
     }
 
@@ -316,11 +344,262 @@ public class InMemoryRestaurantRepository extends InMemoryRepository<Restaurant,
                 .available(true)
                 .build());
 
+        // ========== SUSHI BAR CAMPUS ==========
+        Restaurant sushiBar = Restaurant.builder()
+                .id(UUID.fromString("750e8400-e29b-41d4-a716-446655440004"))
+                .name("Sushi Bar Campus")
+                .address("Bâtiment B - 1er étage")
+                .build();
+
+        sushiBar.setSchedule(LocalTime.of(11, 30), LocalTime.of(20, 0));
+
+        sushiBar.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440012"))
+                .name("California Roll")
+                .description("Saumon, avocat, concombre, sésame")
+                .price(new BigDecimal("9.50"))
+                .category(DishCategory.MAIN_COURSE)
+                .addDietType(DietType.NONE)
+                .available(true)
+                .build());
+
+        sushiBar.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440013"))
+                .name("Veggie Maki")
+                .description("Assortiment de makis végétariens")
+                .price(new BigDecimal("8.00"))
+                .category(DishCategory.VEGETARIAN)
+                .addDietType(DietType.VEGETARIAN)
+                .available(true)
+                .build());
+
+        sushiBar.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440014"))
+                .name("Miso Soup")
+                .description("Soupe miso traditionnelle")
+                .price(new BigDecimal("3.50"))
+                .category(DishCategory.STARTER)
+                .addDietType(DietType.VEGAN)
+                .available(true)
+                .build());
+
+        sushiBar.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440015"))
+                .name("Thé Vert")
+                .description("Thé vert japonais")
+                .price(new BigDecimal("2.00"))
+                .category(DishCategory.BEVERAGE)
+                .addDietType(DietType.VEGAN)
+                .available(true)
+                .build());
+
+        // ========== LE COUSCOUS D'OR ==========
+        Restaurant couscous = Restaurant.builder()
+                .id(UUID.fromString("750e8400-e29b-41d4-a716-446655440005"))
+                .name("Le Couscous d'Or")
+                .address("Avenue Valrose")
+                .build();
+
+        couscous.setSchedule(LocalTime.of(12, 0), LocalTime.of(15, 0));
+
+        couscous.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440016"))
+                .name("Couscous Poulet")
+                .description("Couscous traditionnel au poulet et légumes")
+                .price(new BigDecimal("13.50"))
+                .category(DishCategory.MAIN_COURSE)
+                .addDietType(DietType.NONE)
+                .available(true)
+                .build());
+
+        couscous.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440017"))
+                .name("Tajine Végétarien")
+                .description("Tajine aux légumes de saison")
+                .price(new BigDecimal("11.00"))
+                .category(DishCategory.VEGETARIAN)
+                .addDietType(DietType.VEGETARIAN)
+                .available(true)
+                .build());
+
+        couscous.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440018"))
+                .name("Brick à l'œuf")
+                .description("Brick croustillante garnie d'un œuf")
+                .price(new BigDecimal("4.50"))
+                .category(DishCategory.STARTER)
+                .addDietType(DietType.VEGETARIAN)
+                .available(true)
+                .build());
+
+        couscous.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440019"))
+                .name("Thé à la Menthe")
+                .description("Thé vert à la menthe fraîche")
+                .price(new BigDecimal("2.50"))
+                .category(DishCategory.BEVERAGE)
+                .addDietType(DietType.VEGAN)
+                .available(true)
+                .build());
+
+        // ========== TACOS & BURRITOS ==========
+        Restaurant tacos = Restaurant.builder()
+                .id(UUID.fromString("750e8400-e29b-41d4-a716-446655440006"))
+                .name("Tacos & Burritos")
+                .address("Place Jean-Paul II")
+                .build();
+
+        tacos.setSchedule(LocalTime.of(11, 0), LocalTime.of(23, 0));
+
+        tacos.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440020"))
+                .name("Burrito Poulet")
+                .description("Burrito au poulet grillé, riz, haricots")
+                .price(new BigDecimal("10.50"))
+                .category(DishCategory.MAIN_COURSE)
+                .addDietType(DietType.NONE)
+                .available(true)
+                .build());
+
+        tacos.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440021"))
+                .name("Tacos Végétariens")
+                .description("3 tacos aux haricots noirs et fromage")
+                .price(new BigDecimal("9.00"))
+                .category(DishCategory.VEGETARIAN)
+                .addDietType(DietType.VEGETARIAN)
+                .available(true)
+                .build());
+
+        tacos.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440022"))
+                .name("Nachos")
+                .description("Nachos avec guacamole et fromage fondu")
+                .price(new BigDecimal("6.50"))
+                .category(DishCategory.STARTER)
+                .addDietType(DietType.VEGETARIAN)
+                .available(true)
+                .build());
+
+        tacos.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440023"))
+                .name("Limonade Maison")
+                .description("Limonade fraîche faite maison")
+                .price(new BigDecimal("3.00"))
+                .category(DishCategory.BEVERAGE)
+                .addDietType(DietType.VEGAN)
+                .available(true)
+                .build());
+
+        // ========== PASTA MILANO ==========
+        Restaurant pasta = Restaurant.builder()
+                .id(UUID.fromString("750e8400-e29b-41d4-a716-446655440007"))
+                .name("Pasta Milano")
+                .address("Rue Albert Einstein")
+                .build();
+
+        pasta.setSchedule(LocalTime.of(12, 0), LocalTime.of(21, 30));
+
+        pasta.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440024"))
+                .name("Carbonara")
+                .description("Pâtes à la crème, lardons, parmesan")
+                .price(new BigDecimal("12.00"))
+                .category(DishCategory.MAIN_COURSE)
+                .addDietType(DietType.NONE)
+                .available(true)
+                .build());
+
+        pasta.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440025"))
+                .name("Penne Arrabbiata")
+                .description("Pennes à la sauce tomate épicée")
+                .price(new BigDecimal("10.00"))
+                .category(DishCategory.VEGETARIAN)
+                .addDietType(DietType.VEGETARIAN)
+                .available(true)
+                .build());
+
+        pasta.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440026"))
+                .name("Pizza 4 Fromages")
+                .description("Mozzarella, gorgonzola, parmesan, chèvre")
+                .price(new BigDecimal("13.00"))
+                .category(DishCategory.MAIN_COURSE)
+                .addDietType(DietType.VEGETARIAN)
+                .available(true)
+                .build());
+
+        pasta.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440027"))
+                .name("Panna Cotta")
+                .description("Dessert italien onctueux au coulis de fruits")
+                .price(new BigDecimal("5.00"))
+                .category(DishCategory.DESSERT)
+                .addDietType(DietType.VEGETARIAN)
+                .available(true)
+                .build());
+
+        // ========== LE WOK EXPRESS ==========
+        Restaurant wok = Restaurant.builder()
+                .id(UUID.fromString("750e8400-e29b-41d4-a716-446655440008"))
+                .name("Le Wok Express")
+                .address("Boulevard de la Madeleine")
+                .build();
+
+        wok.setSchedule(LocalTime.of(11, 30), LocalTime.of(22, 0));
+
+        wok.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440028"))
+                .name("Pad Thai Crevettes")
+                .description("Nouilles sautées aux crevettes et légumes")
+                .price(new BigDecimal("11.50"))
+                .category(DishCategory.MAIN_COURSE)
+                .addDietType(DietType.NONE)
+                .available(true)
+                .build());
+
+        wok.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440029"))
+                .name("Riz Cantonais")
+                .description("Riz sauté aux légumes et œuf")
+                .price(new BigDecimal("8.50"))
+                .category(DishCategory.VEGETARIAN)
+                .addDietType(DietType.VEGETARIAN)
+                .available(true)
+                .build());
+
+        wok.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440030"))
+                .name("Nems Végétariens")
+                .description("6 nems aux légumes avec sauce")
+                .price(new BigDecimal("5.50"))
+                .category(DishCategory.STARTER)
+                .addDietType(DietType.VEGETARIAN)
+                .available(true)
+                .build());
+
+        wok.addDish(Dish.builder()
+                .id(UUID.fromString("650e8400-e29b-41d4-a716-446655440031"))
+                .name("Bobun Bœuf")
+                .description("Vermicelles, bœuf grillé, légumes croquants")
+                .price(new BigDecimal("12.00"))
+                .category(DishCategory.MAIN_COURSE)
+                .addDietType(DietType.NONE)
+                .available(true)
+                .build());
+
         // Sauvegarder les restaurants
         save(cafeteria);
         save(foodTruck);
         save(pizzeria);
+        save(sushiBar);
+        save(couscous);
+        save(tacos);
+        save(pasta);
+        save(wok);
     }
+
     @Override
     public Restaurant save(Restaurant restaurant) {
         isDuplicate(restaurant);

@@ -47,6 +47,7 @@ fr\unice\polytech\sophiatecheats\domain\entities\restaurant\Schedule.class
 fr\unice\polytech\sophiatecheats\application\facade\SophiaTechEatsFacade.class
 fr\unice\polytech\sophiatecheats\domain\exceptions\DuplicateRestaurantException.class
 fr\unice\polytech\sophiatecheats\domain\services\payment\PaymentStrategy.class
+fr\unice\polytech\sophiatecheats\application\dto\order\response\GetRestaurantOrdersResponse.class
 fr\unice\polytech\sophiatecheats\domain\entities\cart\CartItem.class
 fr\unice\polytech\sophiatecheats\domain\entities\restaurant\Dish$Builder.class
 fr\unice\polytech\sophiatecheats\domain\services\payment\ExternalCardStrategy.class
@@ -56,6 +57,7 @@ fr\unice\polytech\sophiatecheats\interfaces\http\utils\ResponseSender.class
 fr\unice\polytech\sophiatecheats\domain\repositories\Repository.class
 fr\unice\polytech\sophiatecheats\domain\exceptions\InvalidCartOperationException.class
 fr\unice\polytech\sophiatecheats\interfaces\http\utils\HttpUtils.class
+fr\unice\polytech\sophiatecheats\application\dto\FindCartResponse$CartItemDto.class
 fr\unice\polytech\sophiatecheats\application\usecases\order\ConfirmOrderUseCase$1.class
 fr\unice\polytech\sophiatecheats\application\dto\restaurant\dishManagement\response\AddDishToRestaurantResponse.class
 fr\unice\polytech\sophiatecheats\application\dto\DTO.class
@@ -99,10 +101,12 @@ fr\unice\polytech\sophiatecheats\domain\entities\restaurant\Restaurant$Builder.c
 fr\unice\polytech\sophiatecheats\application\usecases\restaurant\RemoveDishFromRestaurantUseCase.class
 fr\unice\polytech\sophiatecheats\domain\entities\user\CampusUser$Builder.class
 fr\unice\polytech\sophiatecheats\interfaces\http\handlers\CatalogHandler.class
+fr\unice\polytech\sophiatecheats\interfaces\http\handlers\RestaurantOrdersHandler.class
 fr\unice\polytech\sophiatecheats\application\mappers\OrderMapper.class
 fr\unice\polytech\sophiatecheats\domain\exceptions\DishNotFoundException.class
 fr\unice\polytech\sophiatecheats\application\usecases\cart\UpdateCartItemUseCase.class
 fr\unice\polytech\sophiatecheats\application\dto\user\response\BrowseRestaurantsResponse.class
+fr\unice\polytech\sophiatecheats\application\dto\order\RestaurantOrderDto.class
 fr\unice\polytech\sophiatecheats\application\dto\restaurant\dishManagement\DishDto.class
 fr\unice\polytech\sophiatecheats\domain\exceptions\RestaurantValidationException.class
 fr\unice\polytech\sophiatecheats\application\dto\user\response\PlaceOrderResponse.class
@@ -114,6 +118,7 @@ fr\unice\polytech\sophiatecheats\application\dto\user\response\ClearCartResponse
 fr\unice\polytech\sophiatecheats\domain\services\photoai\PhotoAnalysisService.class
 fr\unice\polytech\sophiatecheats\application\dto\delivery\DeliverySlotDTO.class
 fr\unice\polytech\sophiatecheats\domain\services\RestaurantService.class
+fr\unice\polytech\sophiatecheats\application\usecases\restaurant\GetRestaurantOrdersUseCase.class
 fr\unice\polytech\sophiatecheats\application\dto\user\CartItemDto.class
 fr\unice\polytech\sophiatecheats\application\usecases\cart\FindActiveCartUseCase.class
 fr\unice\polytech\sophiatecheats\application\dto\restaurant\dishManagement\response\RemoveDishFromRestaurantResponse.class

@@ -1,14 +1,12 @@
 package fr.unice.polytech.sophiatecheats.application.usecases.user.order;
 
 import fr.unice.polytech.sophiatecheats.application.dto.user.request.PlaceOrderRequest;
+import fr.unice.polytech.sophiatecheats.application.usecases.user.delivery.ValidateDeliverySlotUseCase;
 import fr.unice.polytech.sophiatecheats.domain.entities.cart.Cart;
 import fr.unice.polytech.sophiatecheats.domain.entities.restaurant.Restaurant;
 import fr.unice.polytech.sophiatecheats.domain.entities.user.User;
 import fr.unice.polytech.sophiatecheats.domain.exceptions.ValidationException;
-import fr.unice.polytech.sophiatecheats.domain.repositories.CartRepository;
-import fr.unice.polytech.sophiatecheats.domain.repositories.OrderRepository;
-import fr.unice.polytech.sophiatecheats.domain.repositories.RestaurantRepository;
-import fr.unice.polytech.sophiatecheats.domain.repositories.UserRepository;
+import fr.unice.polytech.sophiatecheats.domain.repositories.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +25,8 @@ class PlaceOrderUseCaseTimeoutTest {
     private RestaurantRepository restaurantRepository;
     private OrderRepository orderRepository;
     private CartRepository cartRepository;
+    private TimeSlotRepository timeSlotRepository;
+    private ValidateDeliverySlotUseCase validateDeliverySlotUseCase;
     private PlaceOrderUseCase useCase;
     private UUID userId;
     private UUID restaurantId;
@@ -39,7 +39,9 @@ class PlaceOrderUseCaseTimeoutTest {
         restaurantRepository = mock(RestaurantRepository.class);
         orderRepository = mock(OrderRepository.class);
         cartRepository = mock(CartRepository.class);
-        useCase = new PlaceOrderUseCase(userRepository, restaurantRepository, orderRepository, cartRepository);
+        timeSlotRepository = mock(fr.unice.polytech.sophiatecheats.domain.repositories.TimeSlotRepository.class);
+        validateDeliverySlotUseCase = mock(fr.unice.polytech.sophiatecheats.application.usecases.user.delivery.ValidateDeliverySlotUseCase.class);
+        useCase = new PlaceOrderUseCase(userRepository, restaurantRepository, orderRepository, cartRepository, timeSlotRepository, validateDeliverySlotUseCase);
         userId = UUID.randomUUID();
         restaurantId = UUID.randomUUID();
         testUser = mock(User.class);

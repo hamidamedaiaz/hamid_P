@@ -17,7 +17,21 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class InMemoryRepository<T, ID> implements Repository<T, ID> {
 
-    protected final Map<ID, T> storage = new ConcurrentHashMap<>();
+    protected final Map<ID, T> storage;
+
+    /**
+     * Default constructor - creates a new storage instance
+     */
+    protected InMemoryRepository() {
+        this.storage = new ConcurrentHashMap<>();
+    }
+
+    /**
+     * Constructor that accepts external storage - allows sharing storage across instances
+     */
+    protected InMemoryRepository(Map<ID, T> sharedStorage) {
+        this.storage = sharedStorage;
+    }
 
     /**
      * Extrait l'ID d'une entité.

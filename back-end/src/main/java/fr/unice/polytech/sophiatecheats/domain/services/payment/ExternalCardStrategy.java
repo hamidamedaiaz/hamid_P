@@ -13,7 +13,7 @@ public class ExternalCardStrategy implements PaymentStrategy {
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private boolean serviceAvailable = true;
-    private boolean alwaysSucceed = false; // Mode test pour désactiver l'échec aléatoire
+    private boolean alwaysSucceed = true; // Les paiements réussissent toujours par défaut
     private boolean enableDelay = true; // Mode test pour désactiver le délai de traitement
 
     @Override

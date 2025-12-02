@@ -8,6 +8,7 @@ import fr.unice.polytech.sophiatecheats.application.dto.order.OrderDto;
 import fr.unice.polytech.sophiatecheats.application.dto.order.request.ConfirmOrderRequest;
 import fr.unice.polytech.sophiatecheats.application.dto.order.request.SelectDeliverySlotRequest;
 import fr.unice.polytech.sophiatecheats.application.dto.order.response.ConfirmOrderResponse;
+import fr.unice.polytech.sophiatecheats.application.dto.order.response.GetRestaurantOrdersResponse;
 import fr.unice.polytech.sophiatecheats.application.dto.order.response.SelectDeliverySlotResponse;
 import fr.unice.polytech.sophiatecheats.application.dto.restaurant.dishManagement.request.AddDishToRestaurantRequest;
 import fr.unice.polytech.sophiatecheats.application.dto.restaurant.dishManagement.request.UpdateDishRequest;
@@ -22,11 +23,14 @@ import fr.unice.polytech.sophiatecheats.application.usecases.order.ConfirmOrderU
 import fr.unice.polytech.sophiatecheats.application.usecases.order.InitiatePaymentUseCase;
 import fr.unice.polytech.sophiatecheats.application.usecases.order.SelectDeliverySlotUseCase;
 import fr.unice.polytech.sophiatecheats.application.usecases.restaurant.AddDishToRestaurantUseCase;
+import fr.unice.polytech.sophiatecheats.application.usecases.restaurant.GetRestaurantOrdersUseCase;
 import fr.unice.polytech.sophiatecheats.application.usecases.restaurant.UpdateDishUseCase;
 import fr.unice.polytech.sophiatecheats.application.usecases.user.BrowseRestaurantsUseCase;
 import fr.unice.polytech.sophiatecheats.application.usecases.user.delivery.GetAvailableDeliverySlotsUseCase;
 import fr.unice.polytech.sophiatecheats.application.usecases.user.order.GetOrderUseCase;
 import fr.unice.polytech.sophiatecheats.application.usecases.user.order.PlaceOrderUseCase;
+import fr.unice.polytech.sophiatecheats.domain.entities.restaurant.Dish;
+import fr.unice.polytech.sophiatecheats.domain.entities.restaurant.Restaurant;
 import fr.unice.polytech.sophiatecheats.infrastructure.config.ApplicationConfig;
 
 import java.util.List;
@@ -49,6 +53,7 @@ public class SophiaTechEatsFacade {
     private final GetOrderUseCase getOrderUseCase;
     private final FindActiveCartUseCase findActiveCartUseCase;
     private final GetAvailableDeliverySlotsUseCase getAvailableDeliverySlotsUseCase;
+    private final GetRestaurantOrdersUseCase getRestaurantOrdersUseCase;
     private final fr.unice.polytech.sophiatecheats.domain.services.RestaurantService restaurantService;
 
     public SophiaTechEatsFacade(ApplicationConfig config) {
@@ -67,6 +72,7 @@ public class SophiaTechEatsFacade {
         this.getOrderUseCase = config.getInstance(GetOrderUseCase.class);
         this.findActiveCartUseCase = config.getInstance(FindActiveCartUseCase.class);
         this.getAvailableDeliverySlotsUseCase = config.getInstance(GetAvailableDeliverySlotsUseCase.class);
+        this.getRestaurantOrdersUseCase = config.getInstance(GetRestaurantOrdersUseCase.class);
         this.restaurantService = config.getInstance(fr.unice.polytech.sophiatecheats.domain.services.RestaurantService.class);
     }
 
@@ -154,11 +160,41 @@ public class SophiaTechEatsFacade {
         restaurantService.releaseDeliverySlot(restaurantId, slotId);
     }
 
+    public Restaurant createRestaurant(String name, String address) {
+        return restaurantService.createRestaurant(name, address);
+    }
 
+    public void updateRestaurantName(java.util.UUID id, String newName) {
+        restaurantService.updateRestaurantName(id, newName);
+    }
+
+    public void updateRestaurantAddress(java.util.UUID id, String newAddress) {
+        restaurantService.updateRestaurantAddress(id, newAddress);
+    }
+
+    public void updateRestaurantOpeningHours(java.util.UUID id, java.time.LocalTime opening, java.time.LocalTime closing) {
+        restaurantService.updateRestaurantOpeningHours(id, opening, closing);
+    }
+
+    public void deleteRestaurant(java.util.UUID id) {
+        restaurantService.deleteRestaurant(id);
+    }
+
+    public void removeDishFromRestaurant(java.util.UUID restaurantId, java.util.UUID dishId) {
+        restaurantService.removeDishFromRestaurant(restaurantId, dishId);
+    }
+
+    public List<Dish> getRestaurantMenu(java.util.UUID restaurantId) {
+        return restaurantService.getRestaurantMenu(restaurantId);
+    }
 
     public void setDeliverySlotToCart(UUID userId, UUID deliverySlotId) {
         selectDeliverySlotUseCase.execute(
-            new SelectDeliverySlotRequest(userId.toString(), deliverySlotId)
+                new SelectDeliverySlotRequest(userId.toString(), deliverySlotId)
         );
+    }
+
+    public GetRestaurantOrdersResponse getRestaurantOrders(UUID restaurantId) {
+        return getRestaurantOrdersUseCase.execute(restaurantId);
     }
 }

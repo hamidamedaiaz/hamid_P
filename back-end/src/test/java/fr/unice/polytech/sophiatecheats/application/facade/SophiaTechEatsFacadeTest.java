@@ -111,12 +111,31 @@ class SophiaTechEatsFacadeTest {
         restaurant.addDish(dish);
         restaurantRepository.save(restaurant);
 
+        // Créer un TimeSlot réel pour le restaurant
+        var timeSlotRepository = config.getInstance(fr.unice.polytech.sophiatecheats.domain.repositories.TimeSlotRepository.class);
+        java.time.LocalDateTime startTime = java.time.LocalDateTime.now().plusDays(1).withHour(12).withMinute(0).withSecond(0);
+        java.time.LocalDateTime endTime = startTime.plusMinutes(30);
+        var timeSlot = new fr.unice.polytech.sophiatecheats.domain.entities.restaurant.TimeSlot(
+                restaurant.getId(),
+                startTime,
+                endTime,
+                10
+        );
+        timeSlotRepository.save(timeSlot);
+
         facade.addDishToCart(new AddDishToCartRequest(user.getId(), dish.getId(), 1));
+
+        // Assigner le delivery slot au cart
+        var cartRepository = config.getInstance(fr.unice.polytech.sophiatecheats.domain.repositories.CartRepository.class);
+        var cart = cartRepository.findActiveCartByUserId(user.getId()).orElseThrow();
+        cart.setDeliverySlot(timeSlot.getId());
+        cartRepository.save(cart);
 
         PlaceOrderRequest orderRequest = new PlaceOrderRequest(
                 user.getId(),
                 restaurant.getId(),
-                PaymentMethod.STUDENT_CREDIT
+                PaymentMethod.STUDENT_CREDIT,
+                timeSlot.getId()
         );
 
         PlaceOrderResponse orderResponse = facade.placeOrder(orderRequest);

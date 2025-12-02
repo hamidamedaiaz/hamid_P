@@ -132,10 +132,14 @@ public class OrderPlacementStepDefs {
         PlaceOrderUseCase placeOrderUseCase = config.getInstance(PlaceOrderUseCase.class);
 
         try {
+            // Generate a mock delivery slot ID (in a real scenario, this would be selected by the user)
+            UUID deliverySlotId = UUID.randomUUID();
+
             PlaceOrderRequest request = new PlaceOrderRequest(
                     testUser.getId(),
                     testRestaurant.getId(),
-                    PaymentMethod.STUDENT_CREDIT
+                    PaymentMethod.STUDENT_CREDIT,
+                    deliverySlotId
             );
             orderResponse = placeOrderUseCase.execute(request);
         } catch (Exception e) {

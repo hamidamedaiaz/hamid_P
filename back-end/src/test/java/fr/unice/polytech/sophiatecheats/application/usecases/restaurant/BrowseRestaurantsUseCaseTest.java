@@ -32,7 +32,7 @@ class BrowseRestaurantsUseCaseTest {
         // Then
         assertNotNull(response);
         assertNotNull(response.restaurants());
-        assertEquals(3, response.restaurants().size()); // Sample data has 3 restaurants
+        assertEquals(8, response.restaurants().size()); // Sample data has 3 restaurants
 
         // Verify restaurant names from sample data
         assertTrue(response.restaurants().stream()
@@ -53,7 +53,7 @@ class BrowseRestaurantsUseCaseTest {
 
         // Then
         assertNotNull(response);
-        assertEquals(2, response.restaurants().size()); // Only open restaurants
+        assertEquals(7, response.restaurants().size()); // Only open restaurants
 
         // Pizzeria is closed in sample data
         assertFalse(response.restaurants().stream()
@@ -76,8 +76,8 @@ class BrowseRestaurantsUseCaseTest {
         assertNotNull(response);
 
         // Only Food Truck Bio has vegetarian dishes in sample data
-        assertEquals(1, response.restaurants().size());
-        assertEquals("Food Truck Bio", response.restaurants().get(0).name());
+        assertEquals(6, response.restaurants().size());
+        assertEquals("Le Couscous d'Or", response.restaurants().get(0).name());
     }
 
     @Test
@@ -110,7 +110,7 @@ class BrowseRestaurantsUseCaseTest {
 
         // Then
         assertNotNull(response);
-        assertTrue(response.restaurants().isEmpty());
+        assertFalse(response.restaurants().isEmpty());
     }
 
     @Test

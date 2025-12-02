@@ -16,4 +16,9 @@ public interface OrderRepository extends Repository<Order, String> {
      * Retourne toutes les commandes ayant le statut donné.
      */
     List<Order> findAllByStatus(OrderStatus status);
+
+    /**
+     * Retourne toutes les commandes pour un restaurant donné.
+     */
+    List<Order> findAllByRestaurantId(UUID restaurantId);
 }

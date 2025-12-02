@@ -54,18 +54,43 @@ public class DeliverySlotApiHandler implements RouteHandler {
     }
 
     private void createSlots(HttpExchange exchange, UUID restaurantId, ResponseSender sender) throws IOException {
-        InputStream is = exchange.getRequestBody();
-        String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-        Map<?, ?> data = JaxsonUtils.fromJson(json, Map.class);
+        try {
+            InputStream is = exchange.getRequestBody();
+            String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            System.out.println("📥 Received JSON for createSlots: " + json);
 
-        assert data != null;
-        LocalDate date = LocalDate.parse((String) data.get("date"));
-        LocalTime start = LocalTime.parse((String) data.get("start"));
-        LocalTime end = LocalTime.parse((String) data.get("end"));
-        int maxCapacity = (Integer) data.get("maxCapacityPerSlot");
+            Map<?, ?> data = JaxsonUtils.fromJson(json, Map.class);
 
-        facade.generateDeliverySlots(restaurantId, date, start, end, maxCapacity);
-        sender.send(HttpUtils.CREATED, "Delivery slots created", Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.TEXT_PLAIN));
+            if (data == null) {
+                sender.send(HttpUtils.BAD_REQUEST, "{\"error\":\"Invalid JSON data\"}", Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON));
+                return;
+            }
+
+            System.out.println("📊 Parsed data: " + data);
+
+            // Valider que tous les champs requis sont présents
+            if (!data.containsKey("date") || !data.containsKey("start") ||
+                !data.containsKey("end") || !data.containsKey("maxCapacityPerSlot")) {
+                String errorMsg = String.format("{\"error\":\"Missing required fields. Received: %s\"}", data.keySet());
+                sender.send(HttpUtils.BAD_REQUEST, errorMsg, Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON));
+                return;
+            }
+
+            LocalDate date = LocalDate.parse((String) data.get("date"));
+            LocalTime start = LocalTime.parse((String) data.get("start"));
+            LocalTime end = LocalTime.parse((String) data.get("end"));
+            int maxCapacity = (Integer) data.get("maxCapacityPerSlot");
+
+            System.out.println("✅ Generating slots: date=" + date + ", start=" + start + ", end=" + end + ", maxCapacity=" + maxCapacity);
+
+            facade.generateDeliverySlots(restaurantId, date, start, end, maxCapacity);
+            sender.send(HttpUtils.CREATED, "Delivery slots created", Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.TEXT_PLAIN));
+        } catch (Exception e) {
+            System.err.println("❌ Error in createSlots: " + e.getMessage());
+            e.printStackTrace();
+            String errorMsg = String.format("{\"error\":\"Failed to create slots: %s\"}", e.getMessage().replace("\"", "\\\""));
+            sender.send(HttpUtils.BAD_REQUEST, errorMsg, Map.of(HttpUtils.CONTENT_TYPE, HttpUtils.APPLICATION_JSON));
+        }
     }
 
     private void reserveOrReleaseSlot(UUID restaurantId, UUID slotId, ResponseSender sender, HttpExchange exchange) throws IOException {

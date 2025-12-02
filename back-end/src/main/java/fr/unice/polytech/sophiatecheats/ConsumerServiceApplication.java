@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  * - Gérer leur panier
  * - Passer des commandes
  * - Consulter leurs commandes
- *
+ * <p>
  * Port: 8082
  */
 public class ConsumerServiceApplication {
@@ -80,6 +80,7 @@ public class ConsumerServiceApplication {
             Thread.currentThread().join();
 
         } catch (Exception e) {
+            Thread.currentThread().interrupt();
             logger.severe(" Erreur critique au démarrage : " + e.getMessage());
             e.printStackTrace();
         }

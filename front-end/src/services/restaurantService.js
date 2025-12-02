@@ -1,3 +1,5 @@
+import api from './api.js';
+
 const API_BASE_URL = "http://localhost:8080/";
 
 export async function fetchRestaurants() {
@@ -52,7 +54,7 @@ export async function deleteRestaurant(restaurantId) {
 }
 
 export async function addDishToMenu(restaurantId, dishData) {
-    const response = await fetch(`${API_BASE_URL}restaurants/${restaurantId}/menu/`, {
+    const response = await fetch(`${API_BASE_URL}restaurants/${restaurantId}/menu`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(dishData),
@@ -63,7 +65,7 @@ export async function addDishToMenu(restaurantId, dishData) {
 
 export async function removeDishFromMenu(restaurantId, dishId) {
     if (globalThis.confirm("Are you sure you want to remove this dish from the menu? This action cannot be undone.")) {
-        const response = await fetch(`${API_BASE_URL}restaurants/${restaurantId}/menu/${dishId}/`, {
+        const response = await fetch(`${API_BASE_URL}restaurants/${restaurantId}/menu/${dishId}`, {
             method: 'DELETE',
         });
         if (!response.ok) throw new Error('Failed to remove dish from menu');
@@ -73,7 +75,7 @@ export async function removeDishFromMenu(restaurantId, dishId) {
 }
 
 export async function updateDishInMenu(restaurantId, dishId, dishData) {
-    const response = await fetch(`${API_BASE_URL}restaurants/${restaurantId}/menu/${dishId}/`, {
+    const response = await fetch(`${API_BASE_URL}restaurants/${restaurantId}/menu/${dishId}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(dishData),
@@ -89,27 +91,43 @@ export async function fetchMenu(restaurantId) {
 }
 
 export async function fetchDeliverySlots(restaurantId) {
-    const response = await fetch(`${API_BASE_URL}restaurants/${restaurantId}/delivery-slots`);
-    if (!response.ok) throw new Error('Failed to fetch delivery slots');
-    return await response.json();
+    try {
+        const response = await api.get(`/restaurants/${restaurantId}/delivery-slots`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching delivery slots:', error);
+        throw new Error('Impossible de charger les créneaux de livraison');
+    }
 }
 
 export async function createSlots(restaurantId, slotData) {
-    const response = await fetch(`${API_BASE_URL}restaurants/${restaurantId}/delivery-slots`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(slotData),
-    });
-    if (!response.ok) throw new Error('Failed to create delivery slots');
-    return await response.json();
+    try {
+        const response = await api.post(`/restaurants/${restaurantId}/delivery-slots`, slotData);
+        return response.data;
+    } catch (error) {
+        console.error('Error creating delivery slots:', error);
+        throw new Error('Impossible de créer les créneaux de livraison');
+    }
 }
 
-export async function reserveOrReleaseSlot(restaurantId, slotId) {
-    const response = await fetch(`${API_BASE_URL}restaurants/${restaurantId}/delivery-slots/${slotId}/`, {
-        method: 'POST',
-    });
-    if (!response.ok) throw new Error('Failed reserving or releasing a delivery slot');
-    return true;
+export async function reserveOrReleaseSlot(restaurantId, slotId, action = 'reserve') {
+    try {
+        const response = await api.post(`/restaurants/${restaurantId}/delivery-slots/${slotId}`, action);
+        return response.data;
+    } catch (error) {
+        console.error('Error reserving/releasing delivery slot:', error);
+        throw new Error('Impossible de réserver/libérer le créneau');
+    }
+}
+
+/**
+ * Récupère toutes les commandes d'un restaurant
+ * @param {string} restaurantId - L'ID du restaurant
+ */
+export async function fetchRestaurantOrders(restaurantId) {
+    const response = await fetch(`${API_BASE_URL}restaurants/${restaurantId}/orders`);
+    if (!response.ok) throw new Error('Failed to fetch restaurant orders');
+    return await response.json();
 }
 
 /**
@@ -128,3 +146,23 @@ export async function filterRestaurants(filters = {}) {
     if (!response.ok) throw new Error('Failed to filter restaurants');
     return await response.json();
 }
+
+// Default export for convenience
+const restaurantService = {
+    fetchRestaurants,
+    fetchRestaurantDetails,
+    createRestaurant,
+    updateRestaurant,
+    deleteRestaurant,
+    addDishToMenu,
+    removeDishFromMenu,
+    updateDishInMenu,
+    fetchMenu,
+    fetchDeliverySlots,
+    createSlots,
+    reserveOrReleaseSlot,
+    filterRestaurants,
+    getRestaurantById: fetchRestaurantDetails
+};
+
+export default restaurantService;
